@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %marker - %msg%n" />
+		</Console>
+		<Console name="Console.org.cyk.utility.log.log4j2.LogLog4jImpl" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Logger name="org.cyk.utility.log.log4j2.LogLog4jImpl" level="trace">
+			<AppenderRef ref="Console.org.cyk.utility.log.log4j2.LogLog4jImpl" />
+		</Logger>
+		<Root level="ALL">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>

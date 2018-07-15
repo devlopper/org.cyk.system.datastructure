@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.cyk.pom.jee.server.jboss.swarm</groupId>
+		<artifactId>pom-jee-server-jboss-swarm</artifactId>
+		<version>pom.jee.server.jboss.swarm.0.0.1</version>
+	</parent>
+
+	<groupId>org.cyk.system.datastructure.server</groupId>
+	<artifactId>datastructure-server-_pom</artifactId>
+	<version>0.0.1</version>
+	<packaging>pom</packaging>
+
+	<name>datastructure system server</name>
+	<url>http://www.cykcorp.org</url>
+	
+	<modules>
+		<!-- Persistence Layer -->
+		<module>../datastructure-server-persistence-entities</module>
+		<module>../datastructure-server-persistence-api</module>
+		<module>../datastructure-server-persistence-impl</module>
+		
+		<!-- Business Layer -->
+		<module>../datastructure-server-business-entities</module>
+		<module>../datastructure-server-business-api</module>
+		<module>../datastructure-server-business-impl</module>
+		
+		<!-- Representation Layer -->
+		<module>../datastructure-server-representation-entities</module>
+		<module>../datastructure-server-representation-api</module>
+		<module>../datastructure-server-representation-impl</module>
+		
+	</modules>
+	
+	<repositories>
+	    <repository>
+	        <id>cyk</id>
+	        <url>https://rawgit.com/devlopper/artifact.maven/master</url>
+	    </repository>
+	</repositories>
+	
+	
+</project>
