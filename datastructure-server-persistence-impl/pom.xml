@@ -21,5 +21,17 @@
 			<version>0.0.1</version>
 		</dependency>		
 	</dependencies>		
-
+	
+	<profiles>
+		<profile>
+			<id>org.cyk.test</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<org.cyk.test.swarm.project.defaults.file>project-defaults.yml</org.cyk.test.swarm.project.defaults.file>
+			</properties>
+		</profile>
+	</profiles>
+	
 </project>
