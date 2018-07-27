@@ -1,10 +1,16 @@
 package org.cyk.system.datastructure.server.persistence.entities.collection.set.nested;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.utility.server.persistence.jpa.AbstractEntity;
@@ -13,38 +19,59 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-@Getter @Setter @Accessors(chain = true) 
-@Table(name = NestedSetNode.TABLE)
-@Deprecated //@Entity
-/*
- * This is used to group nodes. a set must have a node which is the root of the represented tree.
- * Hence for each set a node is created.
- * To enforce integrity :
- * 	1 - a set must have a node (to avoid set with no node , which means group with no nodes , a group exist because a nodes)
- *	2 - a node must have set
- *
- * 	1 & 2 create a reflexive dependency which is impossible to satisfy
- * 
- * 	To resolve this , we will use the set(group) identifier only in the node
- */
+@Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
+@Table(name=NestedSet.TABLE,
+		uniqueConstraints={
+		@UniqueConstraint(name=NestedSet.TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE, columnNames={NestedSet.COLUMN_GROUP,NestedSet.FIELD_LEFT_INDEX})
+		,@UniqueConstraint(name=NestedSet.TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE,columnNames={NestedSet.COLUMN_GROUP,NestedSet.FIELD_RIGHT_INDEX})
+})
 public class NestedSet extends AbstractEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@NotNull @ManyToOne @JoinColumn(name = COLUMN_NODE)
-	private NestedSetNode node;
-
+	@NotNull @Column(name=COLUMN_GROUP,nullable=false)
+	private String group;
+	
+	@ManyToOne @JoinColumn(name=COLUMN_PARENT)
+	private NestedSet parent;
+	
+	@NotNull @Column(nullable=false)
+	private Integer leftIndex;
+	
+	@NotNull @Column(nullable=false)
+	private Integer rightIndex;
+	
+	private Integer numberOfChildren;
+	
+	private Integer numberOfDescendant;
+	
+	//private String detachedIdentifier;
+	
 	/**/
-
+	
 	@Override
 	public NestedSet setCode(String code) {
 		return (NestedSet) super.setCode(code);
 	}
-
+	
+	@Override
+	public NestedSet setFromBusinessIdentifier(Field field, Object identifier) {
+		return (NestedSet) super.setFromBusinessIdentifier(field, identifier);
+	}
+	
 	/**/
-
-	public static final String FIELD_NODE = "node";
-
-	public static final String COLUMN_NODE = FIELD_NODE;
-
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX + "NestedSet";
+	
+	public static final String FIELD_NESTED_SET = "nestedSet";
+	public static final String FIELD_GROUP = "group";
+	public static final String FIELD_PARENT = "parent";
+	public static final String FIELD_LEFT_INDEX = "leftIndex";
+	public static final String FIELD_RIGHT_INDEX = "rightIndex";
+	public static final String FIELD_NUMBER_OF_CHILDREN = "numberOfChildren";
+	public static final String FIELD_NUMBER_OF_DESCENDANT = "numberOfDescendant";
+	
+	public static final String COLUMN_PARENT = FIELD_PARENT;
+	public static final String COLUMN_GROUP = FIELD_GROUP+"_";
+	
+	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"NestedSet";
+	public static final String TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE = "LeftIndexIsUnique";
+	public static final String TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE = "RightIndexIsUnique";
 }
