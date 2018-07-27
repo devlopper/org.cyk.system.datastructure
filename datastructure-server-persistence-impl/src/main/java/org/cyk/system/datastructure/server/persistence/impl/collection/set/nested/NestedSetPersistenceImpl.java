@@ -35,22 +35,22 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 	
 	@Override
 	public Collection<NestedSet> readByGroup(String group) {
-		return __readMany__(__getQueryParameters__((Object)group));
+		return __readMany__(____getQueryParameters____(group));
 	}
 	
 	@Override
 	public Long countByGroup(String group) {
-		return __count__(__getQueryParameters__((Object)group));
+		return __count__(____getQueryParameters____(group));
 	}
 	
 	@Override
 	public Collection<NestedSet> readByParent(NestedSet nestedSet) {
-		return __readMany__(__getQueryParameters__(nestedSet));
+		return __readMany__(____getQueryParameters____(nestedSet));
 	}
 	
 	@Override
 	public Long countByParent(NestedSet nestedSet) {
-		return __count__(__getQueryParameters__(nestedSet));
+		return __count__(____getQueryParameters____(nestedSet));
 	}
 	
 	protected Object[] __getQueryParameters__(String queryIdentifier,Object...objects){
@@ -61,8 +61,8 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		
 		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByParent,queryIdentifier)){
 			NestedSet nestedSet = (NestedSet) objects[0];
-			return new Object[]{NestedSet.FIELD_GROUP, nestedSet.getGroup(),NestedSet.FIELD_LEFT_INDEX,nestedSet.getLeftIndex(),NestedSet.FIELD_RIGHT_INDEX
-					,nestedSet.getRightIndex()};
+			return new Object[]{NestedSet.FIELD_GROUP, nestedSet.getGroup(),NestedSet.FIELD_LEFT_INDEX,nestedSet.getLeftIndex()
+					,NestedSet.FIELD_RIGHT_INDEX,nestedSet.getRightIndex()};
 		}
 		
 		return super.__getQueryParameters__(queryIdentifier, objects);

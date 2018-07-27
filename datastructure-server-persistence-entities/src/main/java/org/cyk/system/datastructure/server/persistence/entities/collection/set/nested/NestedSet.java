@@ -60,7 +60,6 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	/**/
 	
-	public static final String FIELD_NESTED_SET = "nestedSet";
 	public static final String FIELD_GROUP = "group";
 	public static final String FIELD_PARENT = "parent";
 	public static final String FIELD_LEFT_INDEX = "leftIndex";
