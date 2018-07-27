@@ -8,9 +8,11 @@ import javax.inject.Singleton;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetNodePersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSetNode;
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.query.PersistenceQuery;
 import org.cyk.utility.server.persistence.query.PersistenceQueryRepository;
+import org.cyk.utility.sql.builder.QueryStringBuilderSelect;
 
 @Singleton
 public class NestedSetNodePersistenceImpl extends AbstractPersistenceEntityImpl<NestedSetNode> implements NestedSetNodePersistence, Serializable {
@@ -21,8 +23,14 @@ public class NestedSetNodePersistenceImpl extends AbstractPersistenceEntityImpl<
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
 		super.__listenPostConstructPersistenceQueries__();
-		addQueryCollectInstances(readBySet, "SELECT r FROM NestedSetNode r WHERE r.nestedSet = :nestedSet");
-		addQueryCollectInstances(readByParent, "SELECT r FROM NestedSetNode r WHERE r.nestedSet = :nestedSet AND r.leftIndex > :leftIndex AND r.rightIndex < :rightIndex");
+		addQueryCollectInstances(readBySet, __instanciateQuerySelect__()
+				.getWherePredicateBuilderAsEqual().addOperandBuilderByAttribute(NestedSetNode.FIELD_NESTED_SET,ComparisonOperator.EQ)
+				.getParentAsWhereClause().getParentAs(QueryStringBuilderSelect.class));
+		
+		addQueryCollectInstances(readByParent, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
+				.addOperandBuilderByAttribute(NestedSetNode.FIELD_NESTED_SET,ComparisonOperator.EQ).and()
+				.addOperandBuilderByAttribute(NestedSetNode.FIELD_LEFT_INDEX,ComparisonOperator.GT)
+				.and().addOperandBuilderByAttribute(NestedSetNode.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause().getParent());
 	}
 	
 	@Override
