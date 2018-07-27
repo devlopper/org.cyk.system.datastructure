@@ -7,8 +7,8 @@ import org.cyk.system.datastructure.server.persistence.entities.collection.set.n
 
 public interface NestedSetNodePersistence {
 
-	Collection<NestedSetNode> readBySet(NestedSet set);
-	Long countBySet(NestedSet set);
+	Collection<NestedSetNode> readBySet(String set);
+	Long countBySet(String set);
 	
 	Collection<NestedSetNode> readByParent(NestedSetNode node);
 	Long countByParent(NestedSetNode node);

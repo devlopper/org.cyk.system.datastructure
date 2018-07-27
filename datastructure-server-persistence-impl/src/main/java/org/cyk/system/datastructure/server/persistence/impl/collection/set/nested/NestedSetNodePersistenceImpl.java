@@ -34,12 +34,12 @@ public class NestedSetNodePersistenceImpl extends AbstractPersistenceEntityImpl<
 	}
 	
 	@Override
-	public Collection<NestedSetNode> readBySet(NestedSet set) {
+	public Collection<NestedSetNode> readBySet(String set) {
 		return __readMany__(__getQueryParameters__(set));
 	}
 	
 	@Override
-	public Long countBySet(NestedSet set) {
+	public Long countBySet(String set) {
 		return __count__(__getQueryParameters__(set));
 	}
 	

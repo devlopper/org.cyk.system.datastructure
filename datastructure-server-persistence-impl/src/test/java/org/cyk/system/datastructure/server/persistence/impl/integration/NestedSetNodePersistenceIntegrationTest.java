@@ -1,7 +1,6 @@
 package org.cyk.system.datastructure.server.persistence.impl.integration;
 
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetNodePersistence;
-import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSetNode;
 import org.cyk.utility.server.persistence.test.arquillian.AbstractPersistenceEntityIntegrationTestWithDefaultDeploymentAsSwram;
 import org.junit.Assert;
@@ -16,14 +15,6 @@ public class NestedSetNodePersistenceIntegrationTest extends AbstractPersistence
 		//assertionHelper.setIsLogAssertionEnable(Boolean.FALSE);
 	}
 	
-	@Override
-	protected NestedSetNode __instanciateEntity__(Object action) throws Exception {
-		NestedSetNode nestedSetNode = super.__instanciateEntity__(action);
-		nestedSetNode.setNestedSet(new NestedSet().setCode(getRandomCode())).setLeftIndex(0).setRightIndex(0);
-		__createEntity__(nestedSetNode.getNestedSet());
-		return nestedSetNode;
-	}
-	
 	@Test
 	public void createTree(){
 		String set01 = getRandomCode();
@@ -32,14 +23,14 @@ public class NestedSetNodePersistenceIntegrationTest extends AbstractPersistence
 				, set01Node01Node01Node01 = getRandomCode()
 						, set01Node01Node01Node02 = getRandomCode(), set01Node01Node03Node01 = getRandomCode(), set01Node01Node03Node02 = getRandomCode()
 								, set01Node01Node03Node03 = getRandomCode(), set01Node01Node03Node04 = getRandomCode();
-		createSets(set01);
+		//createSets(set01);
 		createNodes(set01, null, new Object[]{set01Node01,0,19});
 		createNodes(set01, set01Node01, new Object[]{set01Node01Node01,1,6},new Object[]{set01Node01Node02,7,8},new Object[]{set01Node01Node03,9,18});
 		createNodes(set01, set01Node01Node01, new Object[]{set01Node01Node01Node01,2,3},new Object[]{set01Node01Node01Node02,4,5});
 		createNodes(set01, set01Node01Node03, new Object[]{set01Node01Node03Node01,10,11},new Object[]{set01Node01Node03Node02,12,13}
 			,new Object[]{set01Node01Node03Node03,14,15},new Object[]{set01Node01Node03Node04,16,17});
 		
-		Assert.assertEquals(new Long(10),__inject__(NestedSetNodePersistence.class).countBySet(__readByBusinessIdentifier__(NestedSet.class,set01)));
+		Assert.assertEquals(new Long(10),__inject__(NestedSetNodePersistence.class).countBySet(set01));
 		
 		Assert.assertEquals(new Long(9),__inject__(NestedSetNodePersistence.class).countByParent(__readByBusinessIdentifier__(NestedSetNode.class,set01Node01)));
 		
@@ -56,12 +47,6 @@ public class NestedSetNodePersistenceIntegrationTest extends AbstractPersistence
 	}
 	
 	/**/
-	
-	private void createSets(String...codes){
-		for(String index : codes){
-			__createEntity__(new NestedSet().setCode(index));
-		}
-	}
 	
 	private void createNodes(String setCode,String parentCode,Object[]...childrenArray){
 		for(Object[] index : childrenArray){

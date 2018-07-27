@@ -20,16 +20,19 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Getter @Setter @Accessors(chain=true) @Entity @Access(AccessType.FIELD)
-//TODO add unique constraint (nestedSet,leftIndex),(nestedSet,rightIndex)
-@Table(uniqueConstraints={
-		@UniqueConstraint(name=NestedSetNode.FIELD_NESTED_SET+"_"+NestedSetNode.FIELD_LEFT_INDEX, columnNames={NestedSetNode.FIELD_NESTED_SET,NestedSetNode.FIELD_LEFT_INDEX})
-		,@UniqueConstraint(name=NestedSetNode.FIELD_NESTED_SET+"_"+NestedSetNode.FIELD_RIGHT_INDEX,columnNames={NestedSetNode.FIELD_NESTED_SET,NestedSetNode.FIELD_RIGHT_INDEX})
+@Table(name=NestedSetNode.TABLE,
+		uniqueConstraints={
+		@UniqueConstraint(name=NestedSetNode.TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE, columnNames={NestedSetNode.FIELD_NESTED_SET,NestedSetNode.FIELD_LEFT_INDEX})
+		,@UniqueConstraint(name=NestedSetNode.TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE,columnNames={NestedSetNode.FIELD_NESTED_SET,NestedSetNode.FIELD_RIGHT_INDEX})
 })
 public class NestedSetNode extends AbstractEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	@NotNull @ManyToOne @JoinColumn(name=COLUMN_NESTED_SET)
-	private NestedSet nestedSet;
+	//@NotNull @ManyToOne @JoinColumn(name=COLUMN_NESTED_SET)
+	//private NestedSet nestedSet;
+	
+	@NotNull @Column(name=COLUMN_NESTED_SET,nullable=false)
+	private String nestedSet;
 	
 	@ManyToOne @JoinColumn(name=COLUMN_PARENT)
 	private NestedSetNode parent;
@@ -69,4 +72,8 @@ public class NestedSetNode extends AbstractEntity implements Serializable {
 	
 	public static final String COLUMN_NESTED_SET = FIELD_NESTED_SET;
 	public static final String COLUMN_PARENT = FIELD_PARENT;
+	
+	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"NestedSetNode";
+	public static final String TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE = "LeftIndexIsUnique";
+	public static final String TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE = "RightIndexIsUnique";
 }
