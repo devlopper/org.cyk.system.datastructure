@@ -1,6 +1,7 @@
 package org.cyk.system.datastructure.server.persistence.impl.collection.set.nested;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.inject.Singleton;
@@ -17,7 +18,7 @@ import org.cyk.utility.sql.builder.QueryStringBuilderSelect;
 public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<NestedSet> implements NestedSetPersistence, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String readByGroup,readByParent;
+	private String readByGroup,readByParent,readByGroupByLeftOrRightGreaterThanOrEqualTo,executeIncrementLeftIndex,executeIncrementRightIndex;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
@@ -30,7 +31,20 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT)
 				.and().addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause().getParent());
-
+		
+		addQueryCollectInstances(readByGroupByLeftOrRightGreaterThanOrEqualTo, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
+				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
+				.lp()
+					.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT,"value")
+					.or()
+					.addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.GT,"value")
+				.rp()
+				.getParentAsWhereClause().getParent());
+		
+		addQuery(executeIncrementLeftIndex, "UPDATE NestedSet nestedSet SET nestedSet.leftIndex = nestedSet.leftIndex"
+				+ " + :increment WHERE nestedSet.identifier IN :identifiers",null);
+		addQuery(executeIncrementRightIndex, "UPDATE NestedSet nestedSet SET nestedSet.rightIndex = nestedSet.rightIndex"
+				+ " + :increment WHERE nestedSet.identifier IN :identifiers",null);
 	}
 	
 	@Override
@@ -49,10 +63,47 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 	}
 	
 	@Override
+	public Collection<NestedSet> readByParent(String nestedSetCode) {
+		return readByParent(readOneByBusinessIdentifier(nestedSetCode));
+	}
+	
+	@Override
 	public Long countByParent(NestedSet nestedSet) {
 		return __count__(____getQueryParameters____(nestedSet));
 	}
 	
+	@Override
+	public Long countByParent(String nestedSetCode) {
+		return countByParent(readOneByBusinessIdentifier(nestedSetCode));
+	}
+	
+	@Override
+	public Collection<NestedSet> readByGroupByLeftOrRightGreaterThanOrEqualTo(String group, Integer value) {
+		return __readMany__(____getQueryParameters____(group,value));
+	}
+	
+	@Override
+	public Long countByGroupByLeftOrRightGreaterThanOrEqualTo(String group, Integer value) {
+		return __count__(____getQueryParameters____(group,value));
+	}
+	
+	@Override
+	public void executeIncrementLeftIndex(Collection<NestedSet> nestedSets, Integer increment) {
+		Collection<Long> identifiers = new ArrayList<>();
+		for(NestedSet index : nestedSets)
+			identifiers.add(index.getIdentifier());
+		__modify__(____getQueryParameters____(identifiers,increment));
+	}
+	
+	@Override
+	public void executeIncrementRightIndex(Collection<NestedSet> nestedSets, Integer increment) {
+		Collection<Long> identifiers = new ArrayList<>();
+		for(NestedSet index : nestedSets)
+			identifiers.add(index.getIdentifier());
+		__modify__(____getQueryParameters____(identifiers,increment));
+	}
+	
+	@SuppressWarnings("unchecked")
 	protected Object[] __getQueryParameters__(String queryIdentifier,Object...objects){
 		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);
 		
@@ -65,6 +116,25 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 					,NestedSet.FIELD_RIGHT_INDEX,nestedSet.getRightIndex()};
 		}
 		
+		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByGroupByLeftOrRightGreaterThanOrEqualTo,queryIdentifier)){
+			String group = (String) objects[0];
+			Integer value = (Integer) objects[1];
+			return new Object[]{NestedSet.FIELD_GROUP, group,"value",value};
+		}
+		
+		if(executeIncrementLeftIndex.equals(queryIdentifier)){
+			Collection<Long> identifiers = (Collection<Long>) objects[0];
+			Integer increment = (Integer) objects[1];
+			return new Object[]{"identifiers", identifiers,"increment",increment};
+		}
+		
+		if(executeIncrementRightIndex.equals(queryIdentifier)){
+			Collection<Long> identifiers = (Collection<Long>) objects[0];
+			Integer increment = (Integer) objects[1];
+			return new Object[]{"identifiers", identifiers,"increment",increment};
+		}
+		
 		return super.__getQueryParameters__(queryIdentifier, objects);
 	}
+	
 }

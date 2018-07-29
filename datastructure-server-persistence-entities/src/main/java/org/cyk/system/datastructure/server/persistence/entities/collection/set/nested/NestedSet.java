@@ -48,6 +48,18 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	/**/
 	
+	/*@Override
+	protected void __listenPrePersist__() {
+		super.__listenPrePersist__();
+		System.out.println("NestedSet.__listenPrePersist__()");
+		if(leftIndex == rightIndex){
+			System.out.println("NestedSet.__listenPrePersist__() ROOLLBAAAACCCCKKKKK");
+			__inject__(ThrowableHelper.class).throwRuntimeException("left index cannot equals right index. value="+leftIndex);
+		}
+	}*/
+	
+	/**/
+	
 	@Override
 	public NestedSet setCode(String code) {
 		return (NestedSet) super.setCode(code);
@@ -56,6 +68,18 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	@Override
 	public NestedSet setFromBusinessIdentifier(Field field, Object identifier) {
 		return (NestedSet) super.setFromBusinessIdentifier(field, identifier);
+	}
+	
+	@Override
+	public NestedSet setFromBusinessIdentifier(String fieldName, Object identifier) {
+		return (NestedSet) super.setFromBusinessIdentifier(fieldName, identifier);
+	}
+	
+	/**/
+	
+	@Override
+	public String toString() {
+		return getCode()+","+getLeftIndex()+","+getRightIndex();
 	}
 	
 	/**/
