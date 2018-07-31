@@ -65,6 +65,10 @@ public class NestedSet extends AbstractEntity implements Serializable {
 		return (NestedSet) super.setCode(code);
 	}
 	
+	public NestedSet setParentFromCode(String code){
+		return setFromBusinessIdentifier(FIELD_PARENT, code);
+	}
+	
 	@Override
 	public NestedSet setFromBusinessIdentifier(Field field, Object identifier) {
 		return (NestedSet) super.setFromBusinessIdentifier(field, identifier);

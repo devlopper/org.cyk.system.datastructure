@@ -9,9 +9,12 @@ import javax.inject.Singleton;
 import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
+import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.properties.Properties;
+import org.cyk.utility.assertion.AssertionBuilderComparison;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessServiceProvider;
+import org.cyk.utility.system.action.SystemAction;
 
 @Singleton
 public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,NestedSetPersistence> implements NestedSetBusiness , Serializable {
@@ -19,15 +22,13 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 
 	@Override
 	public BusinessServiceProvider<NestedSet> create(NestedSet nestedSet, Properties properties) {
-		properties = addExecutionPhaseAssertions(properties,Boolean.TRUE, __injectAssertionBuilderNull__(Boolean.TRUE,nestedSet,NestedSet.FIELD_LEFT_INDEX));
-		properties = addExecutionPhaseAssertions(properties,Boolean.TRUE, __injectAssertionBuilderNull__(Boolean.TRUE,nestedSet,NestedSet.FIELD_RIGHT_INDEX));
-			
-		addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
 			@Override
 			public void run() {
 				if(nestedSet.getParent() == null){
 					nestedSet.setLeftIndex(0);//First set
 				}else {
+					nestedSet.setGroup(nestedSet.getParent().getGroup());
 					nestedSet.setLeftIndex(nestedSet.getParent().getRightIndex()+1);
 					
 					NestedSet parent = nestedSet.getParent();
@@ -62,4 +63,49 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				result.add(nestedSetNode);
 		return result;
 	}
+	
+	@Override
+	protected void ____validateOne____(NestedSet nestedSet, SystemAction action) {
+		if(action == null){
+			//assert post condition : leftIndex > -1
+			__inject__(AssertionBuilderComparison.class)
+			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_LEFT_INDEX)).getParentAs(AssertionBuilderComparison.class)
+			.getAssertedValue2(Boolean.TRUE).setValue(-1).getParentAs(AssertionBuilderComparison.class).setOperator(ComparisonOperator.GT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
+			.execute();
+			
+			//assert post condition : rightIndex > -1
+			__inject__(AssertionBuilderComparison.class)
+			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_RIGHT_INDEX)).getParentAs(AssertionBuilderComparison.class)
+			.getAssertedValue2(Boolean.TRUE).setValue(-1).getParentAs(AssertionBuilderComparison.class).setOperator(ComparisonOperator.GT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
+			.execute();
+			
+			//assert post condition : leftIndex < rightIndex
+			__inject__(AssertionBuilderComparison.class)
+			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_LEFT_INDEX)).getParentAs(AssertionBuilderComparison.class)
+			.getAssertedValue2(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_RIGHT_INDEX)).getParentAs(AssertionBuilderComparison.class)
+			.setOperator(ComparisonOperator.LT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
+			.execute();
+			
+			Long numberOfSet = getPersistence().countByGroup(nestedSet.getGroup());
+			//assert post condition : if (is leaf) then rightIndex - leftIndex = 1 else rightIndex - leftIndex > 1
+			Integer gap = nestedSet.getRightIndex() - nestedSet.getLeftIndex();
+			__inject__(AssertionBuilderComparison.class)
+			.getAssertedValue1(Boolean.TRUE).setValue(gap).getParentAs(AssertionBuilderComparison.class)
+			.getAssertedValue2(Boolean.TRUE).setValue(1).getParentAs(AssertionBuilderComparison.class)
+			.setOperator(nestedSet.getParent() == null ? (numberOfSet == 1 ? ComparisonOperator.EQ : ComparisonOperator.GT) : ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
+			.execute();
+			
+			//assert post condition : count descendant (query) = rightIndex - leftIndex - 1
+			Long descendants = getPersistence().countByParent(nestedSet);
+			__inject__(AssertionBuilderComparison.class)
+			.getAssertedValue1(Boolean.TRUE).setValue(descendants).getParentAs(AssertionBuilderComparison.class)
+			.getAssertedValue2(Boolean.TRUE).setValue(gap-1).getParentAs(AssertionBuilderComparison.class)
+			.setOperator(ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
+			.execute();
+			
+		}else{
+			
+		}
+	}
+	
 }
