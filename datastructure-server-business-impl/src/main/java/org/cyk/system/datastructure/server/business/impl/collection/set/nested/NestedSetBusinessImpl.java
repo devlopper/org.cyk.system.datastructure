@@ -3,6 +3,8 @@ package org.cyk.system.datastructure.server.business.impl.collection.set.nested;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Singleton;
 
@@ -57,6 +59,71 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 		});
 		
 		return super.create(nestedSet, properties);
+	}
+
+	@Override
+	public BusinessServiceProvider<NestedSet> delete(NestedSet nestedSet, Properties properties) {
+		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+			@Override
+			public void run() {
+				List<NestedSet> tree = new ArrayList<>(getPersistence().readByGroupWhereLeftIndexAndRightIndexBetween(nestedSet));
+				Collections.reverse(tree); //TODO this can be done in query using property value.
+				tree.add(nestedSet);
+				Collection<NestedSet> nestedSets = getPersistence().readByGroupByLeftOrRightGreaterThanOrEqualTo(nestedSet.getGroup(), nestedSet.getRightIndex()+1);
+				Collection<NestedSet> nestedSetsLeftIndexToBeUpdate = new ArrayList<>();
+				Collection<NestedSet> nestedSetsRightIndexToBeUpdate = new ArrayList<>();
+				for(NestedSet index : nestedSets){
+					Boolean left = index.getLeftIndex()>nestedSet.getRightIndex()?null:false;
+					if(left==null || left)
+						nestedSetsLeftIndexToBeUpdate.add(index);
+					
+					if(left==null || !left)
+						nestedSetsRightIndexToBeUpdate.add(index);
+				}
+				
+				int step = -tree.size()*2;
+				
+				getPersistence().executeDelete(tree);
+				
+				getPersistence().executeIncrementLeftIndex(nestedSetsLeftIndexToBeUpdate, step);
+				getPersistence().executeIncrementRightIndex(nestedSetsRightIndexToBeUpdate, step);
+				if(nestedSet.getParent()==null){
+					
+				}else{
+					getPersistence().executeIncrementNumberOfChildren(__injectCollectionHelper__().instanciate(nestedSet.getParent()), -1);	
+				}
+				
+				/*for(NestedSet n : nestedSets){
+					//updateBoundaries(n,-step, n.getLeftIndex()>nestedSet.getRightIndex()?null:false);//both bounds or right only
+					Boolean left = n.getLeftIndex()>nestedSet.getRightIndex()?null:false;
+					
+					//getPersistence().executeIncrementLeftIndex(nestedSets, step);
+					
+					if(left==null || left)
+						nestedSet.setLeftIndex(nestedSet.getLeftIndex() + step);
+					
+					if(left==null || !left)
+						nestedSet.setRightIndex(nestedSet.getRightIndex() + step);
+					
+				}*/	
+				
+				if(nestedSet.getParent()==null){
+					//nestedSet.getSet().setRoot(null);
+					//getPersistence().update(nestedSet.getSet());	
+				}
+				
+				//delete tree
+				/*for(NestedSet n : tree){
+					if(n.getCode().equals(nestedSet.getCode()))
+						continue;
+					//n.computeLogMessage();
+					n.setParent(null);
+					getPersistence().delete(n);
+				}*/
+			}
+		});
+		properties.setFromPath(new Object[]{Properties.IS, Properties.CORE,Properties.EXECUTABLE},Boolean.FALSE);
+		return super.delete(nestedSet, properties);
 	}
 	
 	private Collection<NestedSet> getWhereBoundariesGreaterThanOrEqualTo(Collection<NestedSet> nestedSetNodes,Boolean left,Integer index){

@@ -21,7 +21,8 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 
 	private String readByGroup,readByParent,readByGroupByLeftOrRightGreaterThanOrEqualTo,readByGroupWhereLeftIndexAndRightIndexBetween
 	,readByGroupWhereLeftIndexAndRightIndexContain
-		,executeIncrementLeftIndex,executeIncrementRightIndex,executeIncrementNumberOfChildren;
+		,executeIncrementLeftIndex,executeIncrementRightIndex,executeIncrementNumberOfChildren
+		,executeDelete;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
@@ -47,9 +48,9 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		addQueryCollectInstances(readByGroupByLeftOrRightGreaterThanOrEqualTo, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
 				.lp()
-					.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT,"value")
+					.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GTE,"value")
 					.or()
-					.addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.GT,"value")
+					.addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.GTE,"value")
 				.rp()
 				.getParentAsWhereClause().getParent());
 		
@@ -59,6 +60,8 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 				+ " + :increment WHERE nestedSet.identifier IN :identifiers",null);
 		addQuery(executeIncrementNumberOfChildren, "UPDATE NestedSet nestedSet SET nestedSet.numberOfChildren = nestedSet.numberOfChildren"
 				+ " + :increment WHERE nestedSet.identifier IN :identifiers",null);
+		
+		addQuery(executeDelete, "DELETE FROM NestedSet nestedSet WHERE nestedSet.identifier IN :identifiers",null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -99,6 +102,11 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 			Collection<Long> identifiers = (Collection<Long>) objects[0];
 			Integer increment = (Integer) objects[1];
 			return new Object[]{"identifiers", identifiers,"increment",increment};
+		}
+		
+		if(executeDelete.equals(queryIdentifier)){
+			Collection<Long> identifiers = (Collection<Long>) objects[0];
+			return new Object[]{"identifiers", identifiers};
 		}
 		
 		return super.__getQueryParameters__(queryIdentifier, objects);
@@ -226,5 +234,13 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		for(NestedSet index : nestedSets)
 			identifiers.add(index.getIdentifier());
 		__modify__(____getQueryParameters____(identifiers,increment));
+	}
+	
+	@Override
+	public void executeDelete(Collection<NestedSet> nestedSets) {
+		Collection<Long> identifiers = new ArrayList<>();
+		for(NestedSet index : nestedSets)
+			identifiers.add(index.getIdentifier());
+		__delete__(____getQueryParameters____(identifiers));
 	}
 }

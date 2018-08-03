@@ -99,4 +99,10 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"NestedSet";
 	public static final String TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE = "LeftIndexIsUnique";
 	public static final String TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE = "RightIndexIsUnique";
+	
+	/**/
+	
+	public static String generateCode(String parent,Integer index){
+		return parent+"_"+index;
+	}
 }

@@ -49,4 +49,6 @@ public interface NestedSetPersistence extends PersistenceEntity<NestedSet> {
 	void executeIncrementLeftIndex(Collection<NestedSet> nestedSets, Integer increment);
 	void executeIncrementRightIndex(Collection<NestedSet> nestedSets, Integer increment);
 	void executeIncrementNumberOfChildren(Collection<NestedSet> nestedSets, Integer increment);
+	
+	void executeDelete(Collection<NestedSet> nestedSets);
 }

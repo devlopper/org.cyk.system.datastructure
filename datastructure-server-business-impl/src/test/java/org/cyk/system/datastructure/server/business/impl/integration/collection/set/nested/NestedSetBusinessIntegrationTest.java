@@ -1,9 +1,10 @@
 package org.cyk.system.datastructure.server.business.impl.integration.collection.set.nested;
 
+import static org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.generateCode;
+
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
-import org.cyk.utility.server.persistence.Persistence;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -15,65 +16,359 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		return super.__instanciateEntity__(action).setGroup(getRandomCode());
 	}
 	
+	@Test
+	public void delete___groupWithOneNestedSet(){
+		String g01 = getRandomCode();
+		String g01_0_1 = generateCode(g01,0);		
+		createNestedSets(g01, null, g01_0_1);
+		assertGroup(g01, 1);
+		assertNestedSet(g01_0_1,null, 0, 1, 0, 0, 0);
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_1);
+		assertGroup(g01, 0);
+	}
+	
+	@Test
+	public void deleteLeaf___groupWithTwoNestedSet(){
+		String g01 = getRandomCode();
+		String g01_0_3 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_3,0);		
+		createNestedSets(g01, null, g01_0_3);
+		assertGroup(g01, 1);
+		createNestedSets(null, g01_0_3, g01_1_2);
+		assertGroup(g01, 2);
+		
+		assertNestedSet(g01_0_3,null, 0, 3, 1, 1, 0);
+		assertNestedSet(g01_1_2,g01_0_3, 1, 2, 0, 0, 1);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_1_2);
+		
+		assertNestedSet(g01_0_3,null, 0, 1, 0, 0, 0);
+		
+		assertGroup(g01, 1);
+	}
+	
+	@Test
+	public void deleteRoot___groupWithTwoNestedSet(){
+		String g01 = getRandomCode();
+		String g01_0_3 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_3,0);		
+		createNestedSets(g01, null, g01_0_3);
+		assertGroup(g01, 1);
+		createNestedSets(null, g01_0_3, g01_1_2);
+		assertGroup(g01, 2);
+		
+		assertNestedSet(g01_0_3,null, 0, 3, 1, 1, 0);
+		assertNestedSet(g01_1_2,g01_0_3, 1, 2, 0, 0, 1);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_3);
+		
+		assertGroup(g01, 0);
+	}
+	
+	@Test
+	public void deleteLeaf___groupWithThreeNestedSet(){
+		String g01 = getRandomCode();
+		String g01_0_5 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_5,0), g01_3_4 = generateCode(g01_0_5,1);		
+		createNestedSets(g01, null, g01_0_5);
+		assertGroup(g01, 1);
+		createNestedSets(null, g01_0_5, g01_1_2,g01_3_4);
+		
+		assertGroup(g01, 3);
+		assertNestedSet(g01_0_5,null, 0, 5, 2, 2, 0);
+		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_3_4,g01_0_5, 3, 4, 0, 0, 1);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_3_4);
+		
+		assertGroup(g01, 2);
+		assertNestedSet(g01_0_5,null, 0, 3, 1, 1, 0);
+		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
+		
+	}
+	
+	@Test
+	public void deleteRoot___groupWithThreeNestedSet(){
+		String g01 = getRandomCode();
+		String g01_0_5 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_5,0), g01_3_4 = generateCode(g01_0_5,1);		
+		createNestedSets(g01, null, g01_0_5);
+		assertGroup(g01, 1);
+		createNestedSets(null, g01_0_5, g01_1_2,g01_3_4);
+		
+		assertGroup(g01, 3);
+		assertNestedSet(g01_0_5,null, 0, 5, 2, 2, 0);
+		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_3_4,g01_0_5, 3, 4, 0, 0, 1);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_5);
+		
+		assertGroup(g01, 0);
+	}
+	
 	/**
-	 * <img src="icons8-phone-64.png" />
+	 * <img src="group01.png" />
 	 */
 	@Test
-	public void createTree(){
-		/*                                                     group01set01(0,19)
-		 *                group01set01set01(1,6)                group01set01set02(,7,8)                    group01set01set03(9,18) 
-		 * group01set01set01set01(2,3) group01set01set01set02(4,5) group01set01set03set01(10,11) group01set01set03set02(12,13) group01set01set03set03(14,15) group01set01set03set04(16,17)
-		 */
-		NestedSetPersistence persistence = __inject__(NestedSetPersistence.class);
-		String group01 = getRandomCode();
-		String group01Set01 = getRandomCode() //, group01Set02 = getRandomCode() , group01Set03 = getRandomCode()
-				, group01Set01Set01 = getRandomCode(), group01Set01Set02 = getRandomCode(), group01Set01Set03 = getRandomCode(), group01Set03Set01 = getRandomCode()
-				, group01Set03Set02 = getRandomCode()
-								, group01Set03Set03 = getRandomCode(), group01Set03Set04 = getRandomCode();
+	public void createGroup01AndAssertAfterAllNestedSetCreated(){
+		String g01 = getRandomCode();
+		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
+		String g01_2_3 = generateCode(g01_1_10,0), g01_4_9 = generateCode(g01_1_10,1);
+		String g01_14_17 = generateCode(g01_13_30,0), g01_18_19 = generateCode(g01_13_30,1),g01_20_25 = generateCode(g01_13_30,2), g01_26_29 = generateCode(g01_13_30,3);
+		String g01_5_6 = generateCode(g01_4_9,0), g01_7_8 = generateCode(g01_4_9,1);
+		String g01_15_16 = generateCode(g01_14_17,0);
+		String g01_21_22 = generateCode(g01_20_25,0), g01_23_24 = generateCode(g01_20_25,1);
+		String g01_27_28 = generateCode(g01_26_29,0);
 		
-		Assert.assertEquals(new Long(0),persistence.countByGroup(group01));
-		__createEntity__(new NestedSet().setCode(group01Set01).setGroup(group01));
-		assertGroup(group01, 1).assertNestedSet(group01Set01, 0, 1, 0, 0,0);
+		createNestedSets(g01, null, g01_0_31);
+		createNestedSets(null, g01_0_31, g01_1_10,g01_11_12,g01_13_30);
+		createNestedSets(null, g01_1_10, g01_2_3,g01_4_9);
+		createNestedSets(null, g01_13_30, g01_14_17,g01_18_19,g01_20_25,g01_26_29);
+		createNestedSets(null, g01_4_9, g01_5_6,g01_7_8);
+		createNestedSets(null, g01_14_17, g01_15_16);
+		createNestedSets(null, g01_20_25, g01_21_22,g01_23_24);
+		createNestedSets(null, g01_26_29, g01_27_28);
 		
-		__createEntity__(new NestedSet().setCode(group01Set01Set01).setParentFromCode(group01Set01));
-		assertGroup(group01, 2).assertNestedSet(group01Set01, 0, 3, 1, 1,0)
-			.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1);
+		assertGroup(g01, 16);
 		
-		__createEntity__(new NestedSet().setCode(group01Set01Set02).setParentFromCode(group01Set01));
-		assertGroup(group01, 3).assertNestedSet(group01Set01, 0, 5, 2, 2,0)
-		.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1)
-		.assertNestedSet(group01Set01Set01, 3, 4, 0, 0,1);
+		assertNestedSet(g01_0_31,null, 0, 31, 3, 15, 0);
 		
-		__createEntity__(new NestedSet().setCode(group01Set01Set03).setParentFromCode(group01Set01));
-		assertGroup(group01, 4).assertNestedSet(group01Set01, 0, 7, 3, 3,0)
-		.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1)
-		.assertNestedSet(group01Set01Set01, 3, 4, 0, 0,1)
-		.assertNestedSet(group01Set01Set01, 5, 6, 0, 0,1);
+		assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4, 1);
+		assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0, 1);
+		assertNestedSet(g01_13_30,g01_0_31, 13, 30, 4, 8, 1);
+
+		assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0, 2);
+		assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2, 2);
+		assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1, 2);
+		assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0, 2);
+		assertNestedSet(g01_20_25,g01_13_30, 20, 25, 2, 2, 2);
+		assertNestedSet(g01_26_29,g01_13_30, 26, 29, 1, 1, 2);
 		
-		//createSets(group01, null, group01);
-		//Assert.assertEquals(new Long(10),__inject__(NestedSetBusiness.class).countByGroup(group01));
+		assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0, 3);
+		assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0, 3);
+		assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0, 3);
+		assertNestedSet(g01_21_22,g01_20_25, 21, 22, 0, 0, 3);
+		assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0, 3);
+		assertNestedSet(g01_27_28,g01_26_29, 27, 28, 0, 0, 3);
 		
-		//createSets(group01, group01, group01Set01,group01Set02,group01Set03);
-		/*createSets(group01, group01Set01, new Object[]{set01Set01Set01,2,3},new Object[]{set01Set01Set02,4,5});
-		createSets(group01, group01Set03, new Object[]{set01Set03Set01,10,11},new Object[]{set01Set03Set02,12,13}
-			,new Object[]{set01Set03Set03,14,15},new Object[]{set01Set03Set04,16,17});
-		*/
-		/*
-		Assert.assertEquals(new Long(10),__inject__(NestedSetBusiness.class).countByGroup(group01));
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_27_28);
+		assertGroup(g01, 15);
 		
-		Assert.assertEquals(new Long(9),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01)));
+		assertNestedSet(g01_0_31,null, 0, 29, 3, 14, 0);
 		
-		Assert.assertEquals(new Long(2),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set01)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set02)));
-		Assert.assertEquals(new Long(4),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set03)));
+		assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4, 1);
+		assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0, 1);
+		assertNestedSet(g01_13_30,g01_0_31, 13, 28, 4, 7, 1);
+
+		assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0, 2);
+		assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2, 2);
+		assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1, 2);
+		assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0, 2);
+		assertNestedSet(g01_20_25,g01_13_30, 20, 25, 2, 2, 2);
+		assertNestedSet(g01_26_29,g01_13_30, 26, 27, 0, 0, 2);
 		
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set01Set01)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set01Set02)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set03Set01)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set03Set02)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set03Set03)));
-		Assert.assertEquals(new Long(0),__inject__(NestedSetPersistence.class).countByParent(__readByBusinessIdentifier__(NestedSet.class,group01Set03Set04)));
-		*/
+		assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0, 3);
+		assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0, 3);
+		assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0, 3);
+		assertNestedSet(g01_21_22,g01_20_25, 21, 22, 0, 0, 3);
+		assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0, 3);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
+		assertGroup(g01, 0);
+	}
+	
+	/**
+	 * <img src="group01.png" />
+	 */
+	@Test
+	public void createGroup01AndAssertAfterEachNestedSetCreated(){
+		String g01 = getRandomCode();
+		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
+		String g01_2_3 = generateCode(g01_1_10,0), g01_4_9 = generateCode(g01_1_10,1);
+		String g01_14_17 = generateCode(g01_13_30,0), g01_18_19 = generateCode(g01_13_30,1),g01_20_25 = generateCode(g01_13_30,2), g01_26_29 = generateCode(g01_13_30,3);
+		String g01_5_6 = generateCode(g01_4_9,0), g01_7_8 = generateCode(g01_4_9,1);
+		String g01_15_16 = generateCode(g01_14_17,0);
+		String g01_21_22 = generateCode(g01_20_25,0), g01_23_24 = generateCode(g01_20_25,1);
+		String g01_27_28 = generateCode(g01_26_29,0);
+		
+		assertGroup(g01, 0);
+		createNestedSets(g01, null,g01_0_31);
+		assertGroup(g01, 1).assertNestedSet(g01_0_31,null, 0, 1, 0, 0,0);
+		
+		createNestedSets(null, g01_0_31,g01_1_10);
+		assertGroup(g01, 2).assertNestedSet(g01_0_31,null, 0, 3, 1, 1,0)
+			.assertNestedSet(g01_1_10,g01_0_31, 1, 2, 0, 0,1);
+		
+		createNestedSets(null, g01_0_31,g01_11_12);
+		assertGroup(g01, 3).assertNestedSet(g01_0_31,null, 0, 5, 2, 2,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 2, 0, 0,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 3, 4, 0, 0,1);
+		
+		createNestedSets(null, g01_0_31,g01_13_30);
+		assertGroup(g01, 4).assertNestedSet(g01_0_31,null, 0, 7, 3, 3,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 2, 0, 0,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 3, 4, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 5, 6, 0, 0,1);
+		
+		createNestedSets(null, g01_1_10,g01_2_3);
+		assertGroup(g01, 5).assertNestedSet(g01_0_31,null, 0, 9, 3, 4,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 4, 1, 1,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 5, 6, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 7, 8, 0, 0,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2);
+		
+		createNestedSets(null, g01_1_10,g01_4_9);
+		assertGroup(g01, 6).assertNestedSet(g01_0_31,null, 0, 11, 3, 5,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 6, 2, 2,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 7, 8, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 9, 10, 0, 0,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 5, 0, 0,2)
+		;
+		
+		createNestedSets(null, g01_4_9,g01_5_6);
+		assertGroup(g01, 7).assertNestedSet(g01_0_31,null, 0, 13, 3, 6,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 8, 2, 3,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 9, 10, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 7, 1, 1,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		;
+		
+		createNestedSets(null, g01_4_9,g01_7_8);
+		assertGroup(g01, 8).assertNestedSet(g01_0_31,null, 0, 15, 3, 7,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 14, 0, 0,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		;
+		
+		createNestedSets(null, g01_13_30,g01_14_17);
+		assertGroup(g01, 9).assertNestedSet(g01_0_31,null, 0, 17, 3, 8,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 16, 1, 1,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 15, 0, 0,2)
+		;
+		
+		createNestedSets(null, g01_14_17,g01_15_16);
+		assertGroup(g01, 10).assertNestedSet(g01_0_31,null, 0, 19, 3, 9,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 18, 1, 2,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		;
+		
+		createNestedSets(null, g01_13_30,g01_18_19);
+		assertGroup(g01, 11).assertNestedSet(g01_0_31,null, 0, 21, 3, 10,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 20, 2, 3,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		;
+		
+		createNestedSets(null, g01_13_30,g01_20_25);
+		assertGroup(g01, 12).assertNestedSet(g01_0_31,null, 0, 23, 3, 11,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 22, 3, 4,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		.assertNestedSet(g01_20_25,g01_13_30, 20, 21, 0, 0,2)
+		;
+		
+		createNestedSets(null, g01_13_30,g01_26_29);
+		assertGroup(g01, 13).assertNestedSet(g01_0_31,null, 0, 25, 3, 12,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 24, 4, 5,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		.assertNestedSet(g01_20_25,g01_13_30, 20, 21, 0, 0,2)
+		.assertNestedSet(g01_26_29,g01_13_30, 22, 23, 0, 0,2)
+		;
+		
+		createNestedSets(null, g01_26_29,g01_27_28);
+		assertGroup(g01, 14).assertNestedSet(g01_0_31,null, 0, 27, 3, 13,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 26, 4, 6,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		.assertNestedSet(g01_20_25,g01_13_30, 20, 21, 0, 0,2)
+		.assertNestedSet(g01_26_29,g01_13_30, 22, 25, 1, 1,2)
+		.assertNestedSet(g01_27_28,g01_26_29, 23, 24, 0, 0,3)
+		;
+		
+		createNestedSets(null, g01_20_25,g01_21_22);
+		assertGroup(g01, 15).assertNestedSet(g01_0_31,null, 0, 29, 3, 14,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 28, 4, 7,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		.assertNestedSet(g01_20_25,g01_13_30, 20, 23, 1, 1,2)
+		.assertNestedSet(g01_26_29,g01_13_30, 24, 27, 1, 1,2)
+		.assertNestedSet(g01_27_28,g01_26_29, 25, 26, 0, 0,3)
+		.assertNestedSet(g01_21_22,g01_20_25, 21, 22, 0, 0,3)
+		;
+		
+		createNestedSets(null, g01_20_25,g01_23_24);
+		assertGroup(g01, 16).assertNestedSet(g01_0_31,null, 0, 31, 3, 15,0)
+		.assertNestedSet(g01_1_10,g01_0_31, 1, 10, 2, 4,1)
+		.assertNestedSet(g01_11_12,g01_0_31, 11, 12, 0, 0,1)
+		.assertNestedSet(g01_13_30,g01_0_31, 13, 30, 4, 8,1)
+		.assertNestedSet(g01_2_3,g01_1_10, 2, 3, 0, 0,2)
+		.assertNestedSet(g01_4_9,g01_1_10, 4, 9, 2, 2,2)
+		.assertNestedSet(g01_5_6,g01_4_9, 5, 6, 0, 0,3)
+		.assertNestedSet(g01_7_8,g01_4_9, 7, 8, 0, 0,3)
+		.assertNestedSet(g01_14_17,g01_13_30, 14, 17, 1, 1,2)
+		.assertNestedSet(g01_15_16,g01_14_17, 15, 16, 0, 0,3)
+		.assertNestedSet(g01_18_19,g01_13_30, 18, 19, 0, 0,2)
+		.assertNestedSet(g01_20_25,g01_13_30, 20, 25, 2, 2,2)
+		.assertNestedSet(g01_26_29,g01_13_30, 26, 29, 1, 1,2)
+		.assertNestedSet(g01_27_28,g01_26_29, 27, 28, 0, 0,3)
+		.assertNestedSet(g01_21_22,g01_20_25, 21, 22, 0, 0,3)
+		.assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0,3)
+		;
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
+		assertGroup(g01, 0);
 	}
 	
 	/**/
@@ -83,10 +378,14 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		return this;
 	}
 	
-	private NestedSetBusinessIntegrationTest assertNestedSet(String code,Integer left,Integer right,Integer numberOfChildren,Integer numberOfDescendant,Integer numberOfAscendant){
+	private NestedSetBusinessIntegrationTest assertNestedSet(String code,String parentCode,Integer leftIndex,Integer rightIndex,Integer numberOfChildren,Integer numberOfDescendant,Integer numberOfAscendant){
 		NestedSet nestedSet = __inject__(NestedSetPersistence.class).readOneByBusinessIdentifier(code);
+		if(parentCode!=null)
+			Assert.assertEquals("Parent is not correct",parentCode,nestedSet.getParent().getCode());
+		assertionHelper.assertEqualsNumber("Left index is not correct", leftIndex, nestedSet.getLeftIndex());
+		assertionHelper.assertEqualsNumber("Right index is not correct", rightIndex, nestedSet.getRightIndex());
 		Assert.assertEquals("Number of children from count is not correct",new Long(numberOfChildren),__inject__(NestedSetPersistence.class).countByParent(nestedSet));
-		Assert.assertEquals("Number of children from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfChildren()));
+		Assert.assertEquals("Number of children from get is not correct",new Long(numberOfChildren),new Long(nestedSet.getNumberOfChildren()));
 		Assert.assertEquals("Number of descendant from count is not correct",new Long(numberOfDescendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet));
 		Assert.assertEquals("Number of descendant from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfDescendant()));
 		Assert.assertEquals("Number of ascendant from count is not correct",new Long(numberOfAscendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexContain(nestedSet));
@@ -94,9 +393,10 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		return this;
 	}
 	
-	private void createSets(String setCode,String parentCode,String...children){
+	private void createNestedSets(String group,String parentCode,String...children){
 		for(String index : children){
-			__createEntity__(new NestedSet().setCode(index).setGroup(setCode).setFromBusinessIdentifier(NestedSet.FIELD_PARENT,parentCode));
+			NestedSet nestedSet = new NestedSet().setCode(index).setGroup(group).setFromBusinessIdentifier(NestedSet.FIELD_PARENT,parentCode);
+			__createEntity__(nestedSet);
 		}
 	}
 	
