@@ -44,19 +44,17 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	private Integer numberOfDescendant;
 	
+	private Integer numberOfAscendant;
+	
 	//private String detachedIdentifier;
 	
 	/**/
 	
-	/*@Override
-	protected void __listenPrePersist__() {
-		super.__listenPrePersist__();
-		System.out.println("NestedSet.__listenPrePersist__()");
-		if(leftIndex == rightIndex){
-			System.out.println("NestedSet.__listenPrePersist__() ROOLLBAAAACCCCKKKKK");
-			__inject__(ThrowableHelper.class).throwRuntimeException("left index cannot equals right index. value="+leftIndex);
-		}
-	}*/
+	public Integer getNumberOfDescendant(){
+		if(numberOfDescendant == null)
+			numberOfDescendant =  (rightIndex == null || leftIndex == null ? 0 : rightIndex - leftIndex - 1)/2;
+		return numberOfDescendant;
+	}
 	
 	/**/
 	

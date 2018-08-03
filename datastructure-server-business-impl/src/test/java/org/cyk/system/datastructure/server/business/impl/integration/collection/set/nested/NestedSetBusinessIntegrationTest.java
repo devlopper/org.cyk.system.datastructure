@@ -1,11 +1,9 @@
 package org.cyk.system.datastructure.server.business.impl.integration.collection.set.nested;
 
-import java.util.Collection;
-
-import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
+import org.cyk.utility.server.persistence.Persistence;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -17,6 +15,9 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		return super.__instanciateEntity__(action).setGroup(getRandomCode());
 	}
 	
+	/**
+	 * <img src="icons8-phone-64.png" />
+	 */
 	@Test
 	public void createTree(){
 		/*                                                     group01set01(0,19)
@@ -32,26 +33,22 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		
 		Assert.assertEquals(new Long(0),persistence.countByGroup(group01));
 		__createEntity__(new NestedSet().setCode(group01Set01).setGroup(group01));
-		Assert.assertEquals(new Long(1),persistence.countByGroup(group01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01));
+		assertGroup(group01, 1).assertNestedSet(group01Set01, 0, 1, 0, 0,0);
 		
 		__createEntity__(new NestedSet().setCode(group01Set01Set01).setParentFromCode(group01Set01));
-		Assert.assertEquals(new Long(2),persistence.countByGroup(group01));
-		Assert.assertEquals(new Long(1),persistence.countByParent(group01Set01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set01));
+		assertGroup(group01, 2).assertNestedSet(group01Set01, 0, 3, 1, 1,0)
+			.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1);
 		
 		__createEntity__(new NestedSet().setCode(group01Set01Set02).setParentFromCode(group01Set01));
-		Assert.assertEquals(new Long(3),persistence.countByGroup(group01));
-		Assert.assertEquals(new Long(2),persistence.countByParent(group01Set01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set02));
+		assertGroup(group01, 3).assertNestedSet(group01Set01, 0, 5, 2, 2,0)
+		.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1)
+		.assertNestedSet(group01Set01Set01, 3, 4, 0, 0,1);
 		
 		__createEntity__(new NestedSet().setCode(group01Set01Set03).setParentFromCode(group01Set01));
-		Assert.assertEquals(new Long(4),persistence.countByGroup(group01));
-		Assert.assertEquals(new Long(3),persistence.countByParent(group01Set01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set01));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set02));
-		Assert.assertEquals(new Long(0),persistence.countByParent(group01Set01Set03));
+		assertGroup(group01, 4).assertNestedSet(group01Set01, 0, 7, 3, 3,0)
+		.assertNestedSet(group01Set01Set01, 1, 2, 0, 0,1)
+		.assertNestedSet(group01Set01Set01, 3, 4, 0, 0,1)
+		.assertNestedSet(group01Set01Set01, 5, 6, 0, 0,1);
 		
 		//createSets(group01, null, group01);
 		//Assert.assertEquals(new Long(10),__inject__(NestedSetBusiness.class).countByGroup(group01));
@@ -80,6 +77,22 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	}
 	
 	/**/
+	
+	private NestedSetBusinessIntegrationTest assertGroup(String code,Integer numberOfNestedSet){
+		Assert.assertEquals("Number of nested set in group is not correct",new Long(numberOfNestedSet),__inject__(NestedSetPersistence.class).countByGroup(code));
+		return this;
+	}
+	
+	private NestedSetBusinessIntegrationTest assertNestedSet(String code,Integer left,Integer right,Integer numberOfChildren,Integer numberOfDescendant,Integer numberOfAscendant){
+		NestedSet nestedSet = __inject__(NestedSetPersistence.class).readOneByBusinessIdentifier(code);
+		Assert.assertEquals("Number of children from count is not correct",new Long(numberOfChildren),__inject__(NestedSetPersistence.class).countByParent(nestedSet));
+		Assert.assertEquals("Number of children from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfChildren()));
+		Assert.assertEquals("Number of descendant from count is not correct",new Long(numberOfDescendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet));
+		Assert.assertEquals("Number of descendant from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfDescendant()));
+		Assert.assertEquals("Number of ascendant from count is not correct",new Long(numberOfAscendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexContain(nestedSet));
+		Assert.assertEquals("Number of ascendant from get is not correct",new Long(numberOfAscendant),new Long(nestedSet.getNumberOfAscendant()));
+		return this;
+	}
 	
 	private void createSets(String setCode,String parentCode,String...children){
 		for(String index : children){
