@@ -5,4 +5,6 @@ import org.cyk.utility.server.business.BusinessEntity;
 
 public interface NestedSetBusiness extends BusinessEntity<NestedSet> {
 
+	//NestedSetBusiness move(NestedSet nestedSet);
+	
 }

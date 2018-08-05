@@ -22,7 +22,9 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 	private String readByGroup,readByParent,readByGroupByLeftOrRightGreaterThanOrEqualTo,readByGroupWhereLeftIndexAndRightIndexBetween
 	,readByGroupWhereLeftIndexAndRightIndexContain
 		,executeIncrementLeftIndex,executeIncrementRightIndex,executeIncrementNumberOfChildren
-		,executeDelete;
+		,executeDelete,executeDeleteByGroupWhereLeftIndexAndRightIndexBetween
+		,executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan
+		,executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
@@ -61,7 +63,17 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		addQuery(executeIncrementNumberOfChildren, "UPDATE NestedSet nestedSet SET nestedSet.numberOfChildren = nestedSet.numberOfChildren"
 				+ " + :increment WHERE nestedSet.identifier IN :identifiers",null);
 		
+		addQuery(executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan, 
+				"UPDATE NestedSet nestedSet SET nestedSet.leftIndex = nestedSet.leftIndex + :increment , nestedSet.rightIndex = nestedSet.rightIndex + :increment "
+				+ "WHERE nestedSet.group = :group AND (nestedSet.leftIndex>=:value OR nestedSet.rightIndex>=:value) AND nestedSet.leftIndex>:value2",null);
+		
+		addQuery(executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan, 
+				"UPDATE NestedSet nestedSet SET nestedSet.rightIndex = nestedSet.rightIndex + :increment "
+				+ "WHERE nestedSet.group = :group AND (nestedSet.leftIndex>=:value OR nestedSet.rightIndex>=:value) AND nestedSet.leftIndex<:value2",null);
+		
 		addQuery(executeDelete, "DELETE FROM NestedSet nestedSet WHERE nestedSet.identifier IN :identifiers",null);
+		addQuery(executeDeleteByGroupWhereLeftIndexAndRightIndexBetween, "DELETE FROM NestedSet nestedSet WHERE nestedSet.group = :group"
+				+ " AND nestedSet.leftIndex > :leftIndex AND nestedSet.rightIndex < :rightIndex",null);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -108,6 +120,15 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 			Collection<Long> identifiers = (Collection<Long>) objects[0];
 			return new Object[]{"identifiers", identifiers};
 		}
+		
+		if(executeDeleteByGroupWhereLeftIndexAndRightIndexBetween.equals(queryIdentifier))
+			return new Object[]{NestedSet.FIELD_GROUP, objects[0],NestedSet.FIELD_LEFT_INDEX,objects[1],NestedSet.FIELD_RIGHT_INDEX,objects[2]};
+		
+		if(executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan.equals(queryIdentifier))
+			return new Object[]{NestedSet.FIELD_GROUP, objects[0],"value",objects[1],"value2",objects[2],"increment",objects[3]};
+		
+		if(executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan.equals(queryIdentifier))
+			return new Object[]{NestedSet.FIELD_GROUP, objects[0],"value",objects[1],"value2",objects[2],"increment",objects[3]};
 		
 		return super.__getQueryParameters__(queryIdentifier, objects);
 	}
@@ -242,5 +263,22 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		for(NestedSet index : nestedSets)
 			identifiers.add(index.getIdentifier());
 		__delete__(____getQueryParameters____(identifiers));
+	}
+	
+	@Override
+	public void executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(String group, Integer leftIndex,Integer rightIndex) {
+		__delete__(____getQueryParameters____(group,leftIndex,rightIndex));
+	}
+	
+	@Override
+	public void executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan(
+			String group,Integer value1,Integer value2, Integer increment) {
+		__delete__(____getQueryParameters____(group,value1,value2,increment));
+	}
+	
+	@Override
+	public void executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan(
+			String group,Integer value1,Integer value2, Integer increment) {
+		__delete__(____getQueryParameters____(group,value1,value2,increment));
 	}
 }

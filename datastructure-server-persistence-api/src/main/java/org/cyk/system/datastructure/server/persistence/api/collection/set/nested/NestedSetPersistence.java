@@ -49,6 +49,9 @@ public interface NestedSetPersistence extends PersistenceEntity<NestedSet> {
 	void executeIncrementLeftIndex(Collection<NestedSet> nestedSets, Integer increment);
 	void executeIncrementRightIndex(Collection<NestedSet> nestedSets, Integer increment);
 	void executeIncrementNumberOfChildren(Collection<NestedSet> nestedSets, Integer increment);
+	void executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan(String group,Integer value1,Integer value2, Integer increment);
+	void executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan(String group,Integer value1,Integer value2, Integer increment);
 	
 	void executeDelete(Collection<NestedSet> nestedSets);
+	void executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(String group,Integer leftIndex,Integer rightIndex);
 }
