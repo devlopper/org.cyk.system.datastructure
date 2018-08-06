@@ -40,13 +40,20 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	@NotNull @Column(nullable=false)
 	private Integer rightIndex;
 	
+	/**
+	 * This is to mark that the nested set has been detach from its parent but still available.
+	 * Hence , its indexes must have the opposite value
+	 */
+	//private String detachedIdentifier;
+	
+	/* Derived */
+	
 	private Integer numberOfChildren;
 	
 	private Integer numberOfDescendant;
 	
 	private Integer numberOfAscendant;
 	
-	//private String detachedIdentifier;
 	
 	/**/
 	

@@ -9,6 +9,7 @@ import javax.inject.Singleton;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.utility.__kernel__.computation.ComparisonOperator;
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.persistence.AbstractPersistenceEntityImpl;
 import org.cyk.utility.server.persistence.query.PersistenceQuery;
@@ -40,7 +41,8 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		addQueryCollectInstances(readByGroupWhereLeftIndexAndRightIndexBetween, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT)
-				.and().addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause().getParent());
+				.and().addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause()
+				.getParentAs(QueryStringBuilderSelect.class).orderBy(NestedSet.FIELD_RIGHT_INDEX,SortOrder.DESCENDING));
 		
 		addQueryCollectInstances(readByGroupWhereLeftIndexAndRightIndexContain, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()

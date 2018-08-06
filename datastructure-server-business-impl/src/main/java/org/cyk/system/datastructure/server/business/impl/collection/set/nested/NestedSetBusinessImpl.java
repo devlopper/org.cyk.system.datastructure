@@ -60,17 +60,73 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 	}
 
 	@Override
+	public BusinessServiceProvider<NestedSet> update(NestedSet nestedSet, Properties properties) {
+		NestedSet nestedSetInDb = getPersistence().readOne(nestedSet.getIdentifier());
+		Boolean hasBeenMoved = Boolean.TRUE.equals(hasBeenMoved(nestedSetInDb.getParent(), nestedSet.getParent()));
+		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+			@Override
+			public void run() {
+				if(hasBeenMoved){
+					//Move nested set to its new parent
+					//1 - get the nested sets instances
+					Collection<NestedSet> nestedSets = getPersistence().readByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(), nestedSet.getLeftIndex()-1, nestedSet.getRightIndex()+1);
+					//2 - delete nested set from its current parent
+					System.out.println("NestedSetBusinessImpl.update(...).new Runnable() {...}.run() DEL "+nestedSetInDb);
+					delete(nestedSetInDb);
+					//3 - create nested sets under the new parent
+					Collection<NestedSet> nestedSetsToBeCreated = new ArrayList<>();
+					for(NestedSet index : nestedSets){
+						NestedSet nestedSetToBeCreated = new NestedSet().setCode(index.getCode()).setGroup(index.getGroup());
+						for(NestedSet indexNestedSetToBeCreated : nestedSetsToBeCreated)
+							if(indexNestedSetToBeCreated.getCode().equals(index.getParent().getCode())){
+								nestedSetToBeCreated.setParent(indexNestedSetToBeCreated);
+								break;
+							}
+						if(nestedSetToBeCreated.getParent() == null)
+							nestedSetToBeCreated.setParent(nestedSet.getParent());
+						nestedSetsToBeCreated.add(nestedSetToBeCreated);
+					}
+					for(NestedSet index : nestedSetsToBeCreated){
+						System.out.println("NestedSetBusinessImpl.update(...).new Runnable() {...}.run() CREATE : "+index);
+						create(index);
+					}
+					//createMany(nestedSetsToBeCreated);
+				}
+			}
+		});
+		properties.setFromPath(new Object[]{Properties.IS, Properties.CORE,Properties.EXECUTABLE},!hasBeenMoved);
+		return super.update(nestedSet, properties);
+	}
+	
+	private Boolean hasBeenMoved(NestedSet source,NestedSet destination){
+		if(source == null)
+			if(destination == null)
+				return Boolean.FALSE;
+			else
+				return Boolean.TRUE;
+		else
+			if(destination == null)
+				return Boolean.TRUE;
+			else
+				return !source.equals(destination);
+	}
+	
+	@Override
 	public BusinessServiceProvider<NestedSet> delete(NestedSet nestedSet, Properties properties) {
 		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
 			@Override
 			public void run() {
-				Integer increment = -getPersistence().countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),nestedSet.getLeftIndex()-1,nestedSet.getRightIndex()+1).intValue()*2;
-				getPersistence().executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),nestedSet.getLeftIndex()-1,nestedSet.getRightIndex()+1);
+				Integer leftIndex = nestedSet.getLeftIndex()-1;
+				Integer rightIndex = nestedSet.getRightIndex()+1;
+				Integer increment = -getPersistence().countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),leftIndex,rightIndex).intValue()*2;
+				//Delete the tree
+				getPersistence().executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),leftIndex,rightIndex);
+				//Decrement indexes
 				getPersistence().executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan(
-						nestedSet.getGroup(), nestedSet.getRightIndex()+1, nestedSet.getRightIndex(), increment);
+						nestedSet.getGroup(), rightIndex, nestedSet.getRightIndex(), increment);
 				getPersistence().executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan(
-						nestedSet.getGroup(), nestedSet.getRightIndex()+1, nestedSet.getRightIndex(), increment);
-				
+						nestedSet.getGroup(), rightIndex, nestedSet.getRightIndex(), increment);
+				//Decrement parent children
 				if(nestedSet.getParent()==null){
 					
 				}else{
