@@ -2,7 +2,6 @@ package org.cyk.system.datastructure.server.business.impl.integration.collection
 
 import static org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.generateCode;
 
-import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
@@ -374,6 +373,120 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	}
 	
 	@Test
+	public void delete_then_add_same_again(){
+		String g01 = getRandomCode();
+		String g01_0_7 = generateCode(g01,0);
+		String g01_1_4 = generateCode(g01_0_7,0), g01_5_6 = generateCode(g01_0_7,1);
+		String g01_2_3 = generateCode(g01_1_4,0);
+		
+		createNestedSets(g01, null, g01_0_7);
+		createNestedSets(null, g01_0_7, g01_1_4,g01_5_6);
+		createNestedSets(null, g01_1_4, g01_2_3);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		
+		assertGroup(g01, 3);
+		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 4, 0, 0, 1);
+		
+		createNestedSets(null, g01_1_4, g01_2_3);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		
+		assertGroup(g01, 3);
+		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 4, 0, 0, 1);
+		
+		createNestedSets(null, g01_5_6, g01_2_3);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 6, 1, 1, 1);
+		assertNestedSet(g01_2_3,g01_5_6, 4, 5, 0, 0, 2);
+		
+		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		
+		assertGroup(g01, 3);
+		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 4, 0, 0, 1);
+		
+		createNestedSets(null, g01_1_4, g01_2_3);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+		/*
+		moveNestedSet(g01_2_3,g01_5_6);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 6, 1, 1, 1);
+		assertNestedSet(g01_2_3,g01_5_6, 4, 5, 0, 0, 2);
+		
+		moveNestedSet(g01_2_3,g01_1_4);
+		
+		assertGroup(g01, 5);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+		*/
+	}
+	
+	@Test
+	public void move_2_3_to_5_6(){
+		String g01 = getRandomCode();
+		String g01_0_7 = generateCode(g01,0);
+		String g01_1_4 = generateCode(g01_0_7,0), g01_5_6 = generateCode(g01_0_7,1);
+		String g01_2_3 = generateCode(g01_1_4,0);
+		
+		createNestedSets(g01, null, g01_0_7);
+		createNestedSets(null, g01_0_7, g01_1_4,g01_5_6);
+		createNestedSets(null, g01_1_4, g01_2_3);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+		
+		moveNestedSet(g01_2_3,g01_5_6);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 2, 0, 0, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 3, 6, 1, 1, 1);
+		assertNestedSet(g01_2_3,g01_5_6, 4, 5, 0, 0, 2);
+		
+		moveNestedSet(g01_2_3,g01_1_4);
+		
+		assertGroup(g01, 4);
+		assertNestedSet(g01_0_7,null, 0, 7, 2, 3, 0);
+		assertNestedSet(g01_1_4,g01_0_7, 1, 4, 1, 1, 1);
+		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
+		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
+	}
+	
+	@Test
 	public void move_27_28_to_20_25(){
 		String g01 = getRandomCode();
 		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
@@ -418,9 +531,6 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_27_28,g01_20_25, 25, 26, 0, 0, 3);
 		
 		//Move it back
-		for(NestedSet index : __inject__(NestedSetPersistence.class).readByGroup(g01))
-			if(index.getRightIndex() == 27)
-				System.out.println("27 : "+index);
 		moveNestedSet(g01_27_28,g01_26_29);
 		
 		assertGroup(g01, 16);

@@ -25,7 +25,9 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		,executeIncrementLeftIndex,executeIncrementRightIndex,executeIncrementNumberOfChildren
 		,executeDelete,executeDeleteByGroupWhereLeftIndexAndRightIndexBetween
 		,executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan
-		,executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan;
+		,executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan
+		,executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualTo
+		;
 	
 	@Override
 	protected void __listenPostConstructPersistenceQueries__() {
@@ -72,6 +74,13 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		addQuery(executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan, 
 				"UPDATE NestedSet nestedSet SET nestedSet.rightIndex = nestedSet.rightIndex + :increment "
 				+ "WHERE nestedSet.group = :group AND (nestedSet.leftIndex>=:value OR nestedSet.rightIndex>=:value) AND nestedSet.leftIndex<:value2",null);
+		
+		addQuery(executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualTo, 
+				"UPDATE NestedSet nestedSet "
+				+ "SET nestedSet.leftIndex = nestedSet.leftIndex + CASE WHEN (nestedSet.leftIndex > :value2) THEN :increment ELSE 0 END"
+				+ ",   nestedSet.rightIndex = nestedSet.rightIndex + :increment "
+				+ "WHERE nestedSet.group = :group AND (nestedSet.leftIndex>=:value OR nestedSet.rightIndex>=:value)",null);
+		
 		
 		addQuery(executeDelete, "DELETE FROM NestedSet nestedSet WHERE nestedSet.identifier IN :identifiers",null);
 		addQuery(executeDeleteByGroupWhereLeftIndexAndRightIndexBetween, "DELETE FROM NestedSet nestedSet WHERE nestedSet.group = :group"
@@ -130,6 +139,9 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 			return new Object[]{NestedSet.FIELD_GROUP, objects[0],"value",objects[1],"value2",objects[2],"increment",objects[3]};
 		
 		if(executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan.equals(queryIdentifier))
+			return new Object[]{NestedSet.FIELD_GROUP, objects[0],"value",objects[1],"value2",objects[2],"increment",objects[3]};
+		
+		if(executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualTo.equals(queryIdentifier))
 			return new Object[]{NestedSet.FIELD_GROUP, objects[0],"value",objects[1],"value2",objects[2],"increment",objects[3]};
 		
 		return super.__getQueryParameters__(queryIdentifier, objects);
@@ -280,6 +292,12 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 	
 	@Override
 	public void executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan(
+			String group,Integer value1,Integer value2, Integer increment) {
+		__delete__(____getQueryParameters____(group,value1,value2,increment));
+	}
+	
+	@Override
+	public void executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualTo(
 			String group,Integer value1,Integer value2, Integer increment) {
 		__delete__(____getQueryParameters____(group,value1,value2,increment));
 	}

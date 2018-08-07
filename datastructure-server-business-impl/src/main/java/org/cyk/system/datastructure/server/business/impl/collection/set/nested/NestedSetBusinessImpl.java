@@ -71,26 +71,22 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					//1 - get the nested sets instances
 					Collection<NestedSet> nestedSets = getPersistence().readByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(), nestedSet.getLeftIndex()-1, nestedSet.getRightIndex()+1);
 					//2 - delete nested set from its current parent
-					System.out.println("NestedSetBusinessImpl.update(...).new Runnable() {...}.run() DEL "+nestedSetInDb);
 					delete(nestedSetInDb);
-					//3 - create nested sets under the new parent
+					//3 - instantiate nested sets under the new parent
 					Collection<NestedSet> nestedSetsToBeCreated = new ArrayList<>();
 					for(NestedSet index : nestedSets){
 						NestedSet nestedSetToBeCreated = new NestedSet().setCode(index.getCode()).setGroup(index.getGroup());
 						for(NestedSet indexNestedSetToBeCreated : nestedSetsToBeCreated)
 							if(indexNestedSetToBeCreated.getCode().equals(index.getParent().getCode())){
-								nestedSetToBeCreated.setParent(indexNestedSetToBeCreated);
+								nestedSetToBeCreated.setParent(getPersistence().readOne(indexNestedSetToBeCreated.getIdentifier()));
 								break;
 							}
 						if(nestedSetToBeCreated.getParent() == null)
-							nestedSetToBeCreated.setParent(nestedSet.getParent());
+							nestedSetToBeCreated.setParent(getPersistence().readOne(nestedSet.getParent().getIdentifier()));
 						nestedSetsToBeCreated.add(nestedSetToBeCreated);
 					}
-					for(NestedSet index : nestedSetsToBeCreated){
-						System.out.println("NestedSetBusinessImpl.update(...).new Runnable() {...}.run() CREATE : "+index);
-						create(index);
-					}
-					//createMany(nestedSetsToBeCreated);
+					//4 - create nested sets under the new parent
+					createMany(nestedSetsToBeCreated);
 				}
 			}
 		});
@@ -122,16 +118,11 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				//Delete the tree
 				getPersistence().executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),leftIndex,rightIndex);
 				//Decrement indexes
-				getPersistence().executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan(
-						nestedSet.getGroup(), rightIndex, nestedSet.getRightIndex(), increment);
-				getPersistence().executeIncrementRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexLessThan(
+				getPersistence().executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualTo(
 						nestedSet.getGroup(), rightIndex, nestedSet.getRightIndex(), increment);
 				//Decrement parent children
-				if(nestedSet.getParent()==null){
-					
-				}else{
+				if(nestedSet.getParent()!=null)
 					getPersistence().executeIncrementNumberOfChildren(__injectCollectionHelper__().instanciate(nestedSet.getParent()), -1);	
-				}
 			}
 		});
 		properties.setFromPath(new Object[]{Properties.IS, Properties.CORE,Properties.EXECUTABLE},Boolean.FALSE);
