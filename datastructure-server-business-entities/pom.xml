@@ -18,7 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.system.datastructure.server.persistence</groupId>
-			<artifactId>datastructure-server-persistence-entities</artifactId>
+			<artifactId>datastructure-server-persistence-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		<dependency>

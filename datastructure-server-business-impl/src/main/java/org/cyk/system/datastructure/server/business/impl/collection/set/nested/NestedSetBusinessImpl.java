@@ -27,12 +27,10 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 			public void run() {
 				if(nestedSet.getParent() == null){
 					nestedSet.setLeftIndex(0);//First set
-				}else {
-					nestedSet.setGroup(nestedSet.getParent().getGroup());
-					nestedSet.setLeftIndex(nestedSet.getParent().getRightIndex()+1);
-					
+				}else {		
 					NestedSet parent = nestedSet.getParent();
 					Integer parentRightIndex = parent.getRightIndex();
+					nestedSet.setGroup(parent.getGroup());
 					nestedSet.setLeftIndex(parentRightIndex);
 					Collection<NestedSet> nestedSetNodesWhereIndexesToBeRecomputedCandidate = getPersistence().readByGroupByLeftOrRightGreaterThanOrEqualTo(nestedSet.getGroup(), parentRightIndex);
 					Collection<NestedSet> nestedSetNodesWhereIndexesToBeRecomputed = new ArrayList<>();
