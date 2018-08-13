@@ -17,7 +17,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.system.datastructure.server.business</groupId>
-			<artifactId>datastructure-server-business-impl</artifactId>
+			<artifactId>datastructure-server-business-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
 		

@@ -47,17 +47,20 @@ public class NestedSetPersistenceIntegrationTest extends AbstractPersistenceEnti
 		assertNestedSet(set01Set01Set03Set02, 12, 13, 0, 0,2);
 		assertNestedSet(set01Set01Set03Set03, 14, 15, 0, 0,2);
 		assertNestedSet(set01Set01Set03Set04, 16, 17, 0, 0,2);
+		
+		__deleteEntitiesAll__(NestedSet.class);
+		
 	}
 	
-	@Test
+	//@Test
 	public void createTree02(){
 		NestedSetPersistence persistence = __inject__(NestedSetPersistence.class);
 		String set01 = getRandomCode();
 		String set01Set01 = getRandomCode();
-		String set01Set01Set01 = getRandomCode() , set01Set01Set02 = getRandomCode() , set01Set01Set03 = getRandomCode()
-				, set01Set01Set01Set01 = getRandomCode()
-						, set01Set01Set01Set02 = getRandomCode(), set01Set01Set03Set01 = getRandomCode(), set01Set01Set03Set02 = getRandomCode()
-								, set01Set01Set03Set03 = getRandomCode(), set01Set01Set03Set04 = getRandomCode();
+		String set01Set01Set01 = getRandomCode() , set01Set01Set02 = getRandomCode() 
+				/*, set01Set01Set03 = getRandomCode(), set01Set01Set01Set01 = getRandomCode(), set01Set01Set01Set02 = getRandomCode(), set01Set01Set03Set01 = getRandomCode()
+				, set01Set01Set03Set02 = getRandomCode(), set01Set01Set03Set03 = getRandomCode(), set01Set01Set03Set04 = getRandomCode()*/
+				;
 		
 		Assert.assertEquals(new Long(0),persistence.countByGroup(set01));
 		__createEntity__(new NestedSet().setCode(set01Set01).setGroup(set01).setLeftIndex(0).setRightIndex(1));

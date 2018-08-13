@@ -39,6 +39,12 @@
 			<version>0.0.1</version>
 		</dependency>
 		
+		<dependency>
+			<groupId>org.cyk.system.datastructure.server.business</groupId>
+			<artifactId>datastructure-server-business-impl</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		
 		<!--dependency>
 			<groupId>org.cyk.pom.jee.server.representation.main.jboss.swarm</groupId>
 			<artifactId>pom-jee-server-representation-main-jboss-swarm</artifactId>
