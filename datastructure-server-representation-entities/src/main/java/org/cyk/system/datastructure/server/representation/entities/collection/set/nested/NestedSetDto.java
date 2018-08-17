@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.cyk.utility.server.representation.AbstractEntity;
+import org.cyk.utility.server.representation.AbstractDto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @XmlRootElement @Getter @Setter @Accessors(chain=true) @NoArgsConstructor
-public class NestedSet extends AbstractEntity<org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet> implements Serializable {
+public class NestedSetDto extends AbstractDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String group;
@@ -28,11 +28,7 @@ public class NestedSet extends AbstractEntity<org.cyk.system.datastructure.serve
 	private String numberOfDescendant;
 	
 	private String numberOfAscendant;
-	
-	public NestedSet(org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet nestedSet) {
-		super(nestedSet);
-	}
-	
+	/*
 	@Override
 	public org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet getPersistenceEntity() {
 		org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet persistenceEntity = new org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet();
@@ -46,18 +42,6 @@ public class NestedSet extends AbstractEntity<org.cyk.system.datastructure.serve
 		persistenceEntity.setNumberOfAscendant(__getIntegerFrom__(numberOfAscendant));
 		return persistenceEntity;
 	}
-
-	@Override
-	public NestedSet copy(org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet persistenceEntity) {
-		super.copy(persistenceEntity);
-		this.group = __stringify__(persistenceEntity.getGroup());
-		this.parent = __stringify__(persistenceEntity.getParent());
-		this.leftIndex = __stringify__(persistenceEntity.getLeftIndex());
-		this.rightIndex = __stringify__(persistenceEntity.getRightIndex());
-		this.numberOfChildren = __stringify__(persistenceEntity.getNumberOfChildren());
-		this.numberOfDescendant = __stringify__(persistenceEntity.getNumberOfDescendant());
-		this.numberOfAscendant = __stringify__(persistenceEntity.getNumberOfAscendant());
-		return this;
-	}
+	*/
 	
 }

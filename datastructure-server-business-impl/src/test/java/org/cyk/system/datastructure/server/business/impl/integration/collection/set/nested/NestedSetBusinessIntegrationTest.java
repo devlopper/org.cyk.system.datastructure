@@ -2,8 +2,10 @@ package org.cyk.system.datastructure.server.business.impl.integration.collection
 
 import static org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.generateCode;
 
+import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
+import org.cyk.utility.server.business.BusinessEntity;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
 import org.cyk.utility.value.ValueUsageType;
 import org.junit.Assert;
@@ -12,25 +14,22 @@ import org.junit.Test;
 public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram<NestedSet> {
 	private static final long serialVersionUID = 1L;
 	
-	@Override
-	protected NestedSet __instanciateEntity__(Object action) throws Exception {
-		return super.__instanciateEntity__(action).setGroup(getRandomCode());
-	}
-	
 	@Test
 	public void delete___groupWithOneNestedSet(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_1 = generateCode(g01,0);		
 		createNestedSets(g01, null, g01_0_1);
 		assertGroup(g01, 1);
 		assertNestedSet(g01_0_1,null, 0, 1, 0, 0, 0);
 		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_1);
 		assertGroup(g01, 0);
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	@Test
 	public void deleteLeaf___groupWithTwoNestedSet(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_3 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_3,0);		
 		createNestedSets(g01, null, g01_0_3);
 		assertGroup(g01, 1);
@@ -45,11 +44,13 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_0_3,null, 0, 1, 0, 0, 0);
 		
 		assertGroup(g01, 1);
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	@Test
 	public void deleteRoot___groupWithTwoNestedSet(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_3 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_3,0);		
 		createNestedSets(g01, null, g01_0_3);
 		assertGroup(g01, 1);
@@ -62,11 +63,13 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_3);
 		
 		assertGroup(g01, 0);
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	@Test
 	public void deleteLeaf___groupWithThreeNestedSet(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_5 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_5,0), g01_3_4 = generateCode(g01_0_5,1);		
 		createNestedSets(g01, null, g01_0_5);
 		assertGroup(g01, 1);
@@ -83,11 +86,13 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_0_5,null, 0, 3, 1, 1, 0);
 		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
 		
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	@Test
 	public void deleteRoot___groupWithThreeNestedSet(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_5 = generateCode(g01,0), g01_1_2 = generateCode(g01_0_5,0), g01_3_4 = generateCode(g01_0_5,1);		
 		createNestedSets(g01, null, g01_0_5);
 		assertGroup(g01, 1);
@@ -108,7 +113,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	 */
 	@Test
 	public void createGroup01AndAssertAfterAllNestedSetCreated(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
 		String g01_2_3 = generateCode(g01_1_10,0), g01_4_9 = generateCode(g01_1_10,1);
 		String g01_14_17 = generateCode(g01_13_30,0), g01_18_19 = generateCode(g01_13_30,1),g01_20_25 = generateCode(g01_13_30,2), g01_26_29 = generateCode(g01_13_30,3);
@@ -172,6 +177,9 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		
 		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
 		assertGroup(g01, 0);
+		
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	/**
@@ -179,7 +187,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	 */
 	@Test
 	public void createGroup01AndAssertAfterEachNestedSetCreated(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
 		String g01_2_3 = generateCode(g01_1_10,0), g01_4_9 = generateCode(g01_1_10,1);
 		String g01_14_17 = generateCode(g01_13_30,0), g01_18_19 = generateCode(g01_13_30,1),g01_20_25 = generateCode(g01_13_30,2), g01_26_29 = generateCode(g01_13_30,3);
@@ -370,11 +378,14 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		
 		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
 		assertGroup(g01, 0);
+		
+		//clean
+		__deleteEntitiesAll__(NestedSet.class);
 	}
 	
 	@Test
 	public void delete_then_add_same_again(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_7 = generateCode(g01,0);
 		String g01_1_4 = generateCode(g01_0_7,0), g01_5_6 = generateCode(g01_0_7,1);
 		String g01_2_3 = generateCode(g01_1_4,0);
@@ -454,7 +465,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	
 	@Test
 	public void move_2_3_to_5_6(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_7 = generateCode(g01,0);
 		String g01_1_4 = generateCode(g01_0_7,0), g01_5_6 = generateCode(g01_0_7,1);
 		String g01_2_3 = generateCode(g01_1_4,0);
@@ -488,7 +499,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	
 	@Test
 	public void move_27_28_to_20_25(){
-		String g01 = getRandomCode();
+		String g01 = __getRandomCode__();
 		String g01_0_31 = generateCode(g01,0), g01_1_10 = generateCode(g01_0_31,0), g01_11_12 = generateCode(g01_0_31,1), g01_13_30 = generateCode(g01_0_31,2);
 		String g01_2_3 = generateCode(g01_1_10,0), g01_4_9 = generateCode(g01_1_10,1);
 		String g01_14_17 = generateCode(g01_13_30,0), g01_18_19 = generateCode(g01_13_30,1),g01_20_25 = generateCode(g01_13_30,2), g01_26_29 = generateCode(g01_13_30,3);
@@ -591,4 +602,8 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		__updateEntity__(nestedSet);
 	}
 	
+	@Override
+	public Class<? extends BusinessEntity> __getLayerEntityInterfaceClass__() {
+		return NestedSetBusiness.class;
+	}
 }

@@ -12,24 +12,20 @@ public class NestedSetPersistenceIntegrationTest extends AbstractPersistenceEnti
 	private static final long serialVersionUID = 1L;
 	
 	@Override
-	protected void __listenPostConstruct__() {
-		super.__listenPostConstruct__();
-		//assertionHelper.setIsLogAssertionEnable(Boolean.FALSE);
-	}
-	
-	@Override
-	protected NestedSet __instanciateEntity__(Object action) throws Exception {
-		return super.__instanciateEntity__(action).setLeftIndex(0).setRightIndex(1).setGroup(getRandomCode());
+	protected <T> T __instanciate__(Class<T> aClass, Object action) throws Exception {
+		T t = super.__instanciate__(aClass, action);
+		((NestedSet)t).setLeftIndex(0).setRightIndex(1).setGroup(__getRandomCode__());
+		return t;
 	}
 	
 	@Test
 	public void createTree01(){
-		String set01 = getRandomCode();
-		String set01Set01 = getRandomCode();
-		String set01Set01Set01 = getRandomCode() , set01Set01Set02 = getRandomCode() , set01Set01Set03 = getRandomCode()
-				, set01Set01Set01Set01 = getRandomCode()
-						, set01Set01Set01Set02 = getRandomCode(), set01Set01Set03Set01 = getRandomCode(), set01Set01Set03Set02 = getRandomCode()
-								, set01Set01Set03Set03 = getRandomCode(), set01Set01Set03Set04 = getRandomCode();
+		String set01 = __getRandomCode__();
+		String set01Set01 = __getRandomCode__();
+		String set01Set01Set01 = __getRandomCode__() , set01Set01Set02 = __getRandomCode__() , set01Set01Set03 = __getRandomCode__()
+				, set01Set01Set01Set01 = __getRandomCode__()
+						, set01Set01Set01Set02 = __getRandomCode__(), set01Set01Set03Set01 = __getRandomCode__(), set01Set01Set03Set02 = __getRandomCode__()
+								, set01Set01Set03Set03 = __getRandomCode__(), set01Set01Set03Set04 = __getRandomCode__();
 		createSets(set01, null, new Object[]{set01Set01,0,19});
 		createSets(set01, set01Set01, new Object[]{set01Set01Set01,1,6},new Object[]{set01Set01Set02,7,8},new Object[]{set01Set01Set03,9,18});
 		createSets(set01, set01Set01Set01, new Object[]{set01Set01Set01Set01,2,3},new Object[]{set01Set01Set01Set02,4,5});
@@ -55,11 +51,11 @@ public class NestedSetPersistenceIntegrationTest extends AbstractPersistenceEnti
 	//@Test
 	public void createTree02(){
 		NestedSetPersistence persistence = __inject__(NestedSetPersistence.class);
-		String set01 = getRandomCode();
-		String set01Set01 = getRandomCode();
-		String set01Set01Set01 = getRandomCode() , set01Set01Set02 = getRandomCode() 
-				/*, set01Set01Set03 = getRandomCode(), set01Set01Set01Set01 = getRandomCode(), set01Set01Set01Set02 = getRandomCode(), set01Set01Set03Set01 = getRandomCode()
-				, set01Set01Set03Set02 = getRandomCode(), set01Set01Set03Set03 = getRandomCode(), set01Set01Set03Set04 = getRandomCode()*/
+		String set01 = __getRandomCode__();
+		String set01Set01 = __getRandomCode__();
+		String set01Set01Set01 = __getRandomCode__() , set01Set01Set02 = __getRandomCode__() 
+				/*, set01Set01Set03 = __getRandomCode__(), set01Set01Set01Set01 = __getRandomCode__(), set01Set01Set01Set02 = __getRandomCode__(), set01Set01Set03Set01 = __getRandomCode__()
+				, set01Set01Set03Set02 = __getRandomCode__(), set01Set01Set03Set03 = __getRandomCode__(), set01Set01Set03Set04 = __getRandomCode__()*/
 				;
 		
 		Assert.assertEquals(new Long(0),persistence.countByGroup(set01));
@@ -145,52 +141,52 @@ public class NestedSetPersistenceIntegrationTest extends AbstractPersistenceEnti
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNull_leftIndexIsNull_rightIndexIsNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNull_leftIndexIsNull_rightIndexIsNotNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setRightIndex(0));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setRightIndex(0));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNull_leftIndexIsNotNull_rightIndexIsNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setLeftIndex(0));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setLeftIndex(0));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNull_leftIndexIsNotNull_rightIndexIsNotNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setLeftIndex(0).setRightIndex(1));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setLeftIndex(0).setRightIndex(1));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNull_rightIndexIsNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNull_rightIndexIsNotNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()).setRightIndex(0));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()).setRightIndex(0));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNotNull_rightIndexIsNull(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()).setLeftIndex(0));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()).setLeftIndex(0));
 	}
 	/*
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNotNull_rightIndexIsNotNull_leftIndexIsEqualToRightIndexIsEqualToZero(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()).setLeftIndex(0).setRightIndex(0));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()).setLeftIndex(0).setRightIndex(0));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNotNull_rightIndexIsNotNull_leftIndexIsEqualToRightIndexIsEqualToOne(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()).setLeftIndex(1).setRightIndex(1));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()).setLeftIndex(1).setRightIndex(1));
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void throwable___groupIsNotNull_leftIndexIsNotNull_rightIndexIsNotNull_leftIndexIsEqualToRightIndexIsEqualToTwo(){
-		__createEntity__(new NestedSet().setCode(getRandomCode()).setGroup(getRandomCode()).setLeftIndex(2).setRightIndex(2));
+		__createEntity__(new NestedSet().setCode(__getRandomCode__()).setGroup(__getRandomCode__()).setLeftIndex(2).setRightIndex(2));
 	}
 	*/
 	/**/

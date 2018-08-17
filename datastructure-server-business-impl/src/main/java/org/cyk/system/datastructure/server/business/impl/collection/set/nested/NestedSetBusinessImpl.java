@@ -27,6 +27,9 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 			public void run() {
 				if(nestedSet.getParent() == null){
 					nestedSet.setLeftIndex(0);//First set
+					if(__injectStringHelper__().isBlank(nestedSet.getGroup())) {
+						nestedSet.setGroup(nestedSet.getCode());
+					}
 				}else {		
 					NestedSet parent = nestedSet.getParent();
 					Integer parentRightIndex = parent.getRightIndex();
@@ -84,7 +87,12 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 						nestedSetsToBeCreated.add(nestedSetToBeCreated);
 					}
 					//4 - create nested sets under the new parent
-					createMany(nestedSetsToBeCreated);
+					//TODO We are get validation issue (left index which is null) when using createMany.
+					//createMany(nestedSetsToBeCreated);
+					
+					//We will iterate the collection and use create
+					for(NestedSet index : nestedSetsToBeCreated)
+						create(index);
 				}
 			}
 		});
