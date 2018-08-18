@@ -2,10 +2,8 @@ package org.cyk.system.datastructure.server.business.impl.integration.collection
 
 import static org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.generateCode;
 
-import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
-import org.cyk.utility.server.business.BusinessEntity;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
 import org.cyk.utility.value.ValueUsageType;
 import org.junit.Assert;
@@ -602,8 +600,4 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		__updateEntity__(nestedSet);
 	}
 	
-	@Override
-	public Class<? extends BusinessEntity> __getLayerEntityInterfaceClass__() {
-		return NestedSetBusiness.class;
-	}
 }

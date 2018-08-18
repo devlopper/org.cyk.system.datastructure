@@ -50,8 +50,22 @@
 			<artifactId>pom-jee-server-representation-main-jboss-swarm</artifactId>
 			<version>pom.jee.server.representation.main.jboss.swarm.0.0.1</version>
 			<type>pom</type>
-			<scope>compile</scope>
 		</dependency-->
+		
+		<dependency>
+			<groupId>org.wildfly.swarm</groupId>
+			<artifactId>jaxrs</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.wildfly.swarm</groupId>
+			<artifactId>cdi</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.wildfly.swarm</groupId>
+			<artifactId>jpa</artifactId>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.cyk.pom.jee.server.representation.test.jboss.swarm</groupId>
