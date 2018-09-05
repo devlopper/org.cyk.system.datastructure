@@ -52,7 +52,8 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	/**/
 	
 	public Integer getNumberOfDescendant(){
-		if(numberOfDescendant == null)
+		//TODO how to make it work with the if check
+		//if(numberOfDescendant == null)
 			numberOfDescendant =  (rightIndex == null || leftIndex == null ? 0 : rightIndex - leftIndex - 1)/2;
 		return numberOfDescendant;
 	}
@@ -82,7 +83,7 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	@Override
 	public String toString() {
-		return getCode()+","+getLeftIndex()+","+getRightIndex();
+		return getCode()+","+getLeftIndex()+","+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant();
 	}
 	
 	/**/

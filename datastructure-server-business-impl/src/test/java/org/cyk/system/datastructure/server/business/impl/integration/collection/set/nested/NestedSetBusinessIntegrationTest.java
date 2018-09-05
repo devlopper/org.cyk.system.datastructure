@@ -2,6 +2,7 @@ package org.cyk.system.datastructure.server.business.impl.integration.collection
 
 import static org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.generateCode;
 
+import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
 import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
@@ -567,6 +568,17 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	
 	/**/
 	
+	@Test
+	public void create___groupWithOneNestedSet_negativeIndexes(){
+		String code = __getRandomCode__();
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(__getRandomCode__()).setCode(code).setLeftIndex(-2).setRightIndex(-1));
+		NestedSet nestedSet = __inject__(NestedSetBusiness.class).findOneByBusinessIdentifier(code);
+		nestedSet.setLeftIndex(-2).setRightIndex(-1);
+		__inject__(NestedSetBusiness.class).update(nestedSet);
+	}
+	
+	/**/
+	
 	private NestedSetBusinessIntegrationTest assertGroup(String code,Integer numberOfNestedSet){
 		Assert.assertEquals("Number of nested set in group is not correct",new Long(numberOfNestedSet),__inject__(NestedSetPersistence.class).countByGroup(code));
 		return this;
@@ -581,7 +593,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		Assert.assertEquals("Number of children from count is not correct",new Long(numberOfChildren),__inject__(NestedSetPersistence.class).countByParent(nestedSet));
 		Assert.assertEquals("Number of children from get is not correct",new Long(numberOfChildren),new Long(nestedSet.getNumberOfChildren()));
 		Assert.assertEquals("Number of descendant from count is not correct",new Long(numberOfDescendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet));
-		Assert.assertEquals("Number of descendant from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfDescendant()));
+		Assert.assertEquals("Number of descendant of "+code+" from get is not correct",new Long(numberOfDescendant),new Long(nestedSet.getNumberOfDescendant()));
 		Assert.assertEquals("Number of ascendant from count is not correct",new Long(numberOfAscendant),__inject__(NestedSetPersistence.class).countByGroupWhereLeftIndexAndRightIndexContain(nestedSet));
 		Assert.assertEquals("Number of ascendant from get is not correct",new Long(numberOfAscendant),new Long(nestedSet.getNumberOfAscendant()));
 		return this;

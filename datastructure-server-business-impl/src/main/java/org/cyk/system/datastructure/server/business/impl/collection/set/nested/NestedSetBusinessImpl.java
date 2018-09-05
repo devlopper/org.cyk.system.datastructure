@@ -9,20 +9,20 @@ import javax.inject.Singleton;
 import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
-import org.cyk.utility.__kernel__.computation.ComparisonOperator;
 import org.cyk.utility.__kernel__.properties.Properties;
-import org.cyk.utility.assertion.AssertionBuilderComparison;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
-import org.cyk.utility.server.business.BusinessServiceProvider;
-import org.cyk.utility.system.action.SystemAction;
+import org.cyk.utility.server.business.BusinessFunctionCreator;
+import org.cyk.utility.server.business.BusinessFunctionModifier;
+import org.cyk.utility.server.business.BusinessFunctionRemover;
 
 @Singleton
 public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,NestedSetPersistence> implements NestedSetBusiness , Serializable {
 	private static final long serialVersionUID = 1L;
-
+	
 	@Override
-	public BusinessServiceProvider<NestedSet> create(NestedSet nestedSet, Properties properties) {
-		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+	protected void __listenExecuteCreateOneBefore__(NestedSet nestedSet, Properties properties,BusinessFunctionCreator function) {
+		super.__listenExecuteCreateOneBefore__(nestedSet, properties, function);
+		function.try_().begin().addRunnables(new Runnable() {
 			@Override
 			public void run() {
 				if(nestedSet.getParent() == null){
@@ -54,19 +54,19 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				nestedSet.setRightIndex(nestedSet.getLeftIndex()+1);
 				nestedSet.setNumberOfChildren(0);
 				nestedSet.setNumberOfAscendant(getPersistence().countByGroupWhereLeftIndexAndRightIndexContain(nestedSet).intValue());
+				
 			}
 		});
-		
-		return super.create(nestedSet, properties);
 	}
-
+	
 	@Override
-	public BusinessServiceProvider<NestedSet> update(NestedSet nestedSet, Properties properties) {
-		NestedSet nestedSetInDb = getPersistence().readOne(nestedSet.getIdentifier());
-		Boolean hasBeenMoved = Boolean.TRUE.equals(hasBeenMoved(nestedSetInDb.getParent(), nestedSet.getParent()));
-		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+	protected void __listenExecuteUpdateOneBefore__(NestedSet nestedSet, Properties properties,BusinessFunctionModifier function) {
+		super.__listenExecuteUpdateOneBefore__(nestedSet, properties, function);
+		function.try_().setIsCodeFromFunctionExecutable(Boolean.FALSE).run().addRunnables( new Runnable() {
 			@Override
 			public void run() {
+				NestedSet nestedSetInDb = getPersistence().readOne(nestedSet.getIdentifier());
+				Boolean hasBeenMoved = Boolean.TRUE.equals(hasBeenMoved(nestedSetInDb.getParent(), nestedSet.getParent()));
 				if(hasBeenMoved){
 					//Move nested set to its new parent
 					//1 - get the nested sets instances
@@ -93,11 +93,10 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					//We will iterate the collection and use create
 					for(NestedSet index : nestedSetsToBeCreated)
 						create(index);
+					
 				}
 			}
 		});
-		properties.setFromPath(new Object[]{Properties.IS, Properties.CORE,Properties.EXECUTABLE},!hasBeenMoved);
-		return super.update(nestedSet, properties);
 	}
 	
 	private Boolean hasBeenMoved(NestedSet source,NestedSet destination){
@@ -114,8 +113,9 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 	}
 	
 	@Override
-	public BusinessServiceProvider<NestedSet> delete(NestedSet nestedSet, Properties properties) {
-		properties = addExecutionPhaseRunnables(properties, Boolean.TRUE, new Runnable() {
+	protected void __listenExecuteDeleteOneBefore__(NestedSet nestedSet, Properties properties,BusinessFunctionRemover function) {
+		super.__listenExecuteDeleteOneBefore__(nestedSet, properties, function);
+		function.try_().setIsCodeFromFunctionExecutable(Boolean.FALSE).run().addRunnables(new Runnable() {
 			@Override
 			public void run() {
 				Integer leftIndex = nestedSet.getLeftIndex()-1;
@@ -131,8 +131,6 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					getPersistence().executeIncrementNumberOfChildren(__injectCollectionHelper__().instanciate(nestedSet.getParent()), -1);	
 			}
 		});
-		properties.setFromPath(new Object[]{Properties.IS, Properties.CORE,Properties.EXECUTABLE},Boolean.FALSE);
-		return super.delete(nestedSet, properties);
 	}
 	
 	private Collection<NestedSet> getWhereBoundariesGreaterThanOrEqualTo(Collection<NestedSet> nestedSetNodes,Boolean left,Integer index){
@@ -141,65 +139,6 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 			if( (Boolean.TRUE.equals(left) && nestedSetNode.getLeftIndex()>=index) || (Boolean.FALSE.equals(left) && nestedSetNode.getRightIndex()>=index) )
 				result.add(nestedSetNode);
 		return result;
-	}
-	
-	@Override
-	protected void ____validateOne____(NestedSet nestedSet, SystemAction action) {
-		if(action == null){
-			//assert leftIndex > -1
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_LEFT_INDEX)).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setValue(-1).getParentAs(AssertionBuilderComparison.class).setOperator(ComparisonOperator.GT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//assert rightIndex > -1
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_RIGHT_INDEX)).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setValue(-1).getParentAs(AssertionBuilderComparison.class).setOperator(ComparisonOperator.GT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//assert leftIndex < rightIndex
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_LEFT_INDEX)).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_RIGHT_INDEX)).getParentAs(AssertionBuilderComparison.class)
-			.setOperator(ComparisonOperator.LT).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			Long numberOfSet = getPersistence().countByGroup(nestedSet.getGroup());
-			//assert if (is leaf) then rightIndex - leftIndex = 1 else rightIndex - leftIndex > 1
-			Integer gap = nestedSet.getRightIndex() - nestedSet.getLeftIndex();
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setValue(gap).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setValue(1).getParentAs(AssertionBuilderComparison.class)
-			.setOperator(nestedSet.getParent() == null ? (numberOfSet == 1 ? ComparisonOperator.EQ : ComparisonOperator.GT) : ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//assert number of children from getter = number of children from query
-			Long children = getPersistence().countByParent(nestedSet);
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_NUMBER_OF_CHILDREN)).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setValue(children).getParentAs(AssertionBuilderComparison.class).setOperator(ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//assert number of descendant from query = rightIndex - leftIndex - 1
-			Long descendants = getPersistence().countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet);
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setValue(descendants).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setValue(gap-1).getParentAs(AssertionBuilderComparison.class)
-			.setOperator(ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//assert number of descendant from query = number of descendant from getter
-			__inject__(AssertionBuilderComparison.class)
-			.getAssertedValue1(Boolean.TRUE).setValue(descendants).getParentAs(AssertionBuilderComparison.class)
-			.getAssertedValue2(Boolean.TRUE).setFieldValueGetter(__injectFieldValueGetter__().setObject(nestedSet).setField(NestedSet.FIELD_NUMBER_OF_DESCENDANT)).getParentAs(AssertionBuilderComparison.class)
-			.setOperator(ComparisonOperator.EQ).setIsThrownWhenValueIsNotTrue(Boolean.TRUE)
-			.execute();
-			
-			//System.out.println(descendants+" ::: "+nestedSet.getLeftIndex()+"-"+nestedSet.getRightIndex()+" = "+ nestedSet.getNumberOfDescendant());
-		}else{
-			
-		}
 	}
 	
 }
