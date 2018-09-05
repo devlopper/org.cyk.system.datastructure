@@ -44,18 +44,15 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	private Integer numberOfChildren;
 	
-	private Integer numberOfDescendant;
-	
 	private Integer numberOfAscendant;
-	
-	
+		
 	/**/
 	
+	/*
+	 * We do not need to declare a field to store this derived value based on existing fields (left and right indexes)
+	 */
 	public Integer getNumberOfDescendant(){
-		//TODO how to make it work with the if check
-		//if(numberOfDescendant == null)
-			numberOfDescendant =  (rightIndex == null || leftIndex == null ? 0 : rightIndex - leftIndex - 1)/2;
-		return numberOfDescendant;
+		return rightIndex == null || leftIndex == null ? 0 : (rightIndex - leftIndex - 1)/2;
 	}
 	
 	/**/
