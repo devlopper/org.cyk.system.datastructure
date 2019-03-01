@@ -36,6 +36,12 @@
 			<artifactId>datastructure-server-representation-impl</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<!--dependency>
+			<groupId>org.cyk.pom.jee.server.representation.main.jboss.swarm</groupId>
+			<artifactId>pom-jee-server-representation-main-jboss-swarm</artifactId>
+			<version>pom.jee.server.representation.main.jboss.swarm.0.0.1</version>
+			<type>pom</type>
+		</dependency-->
 		
 		<dependency>
 			<groupId>org.wildfly.swarm</groupId>
@@ -51,7 +57,7 @@
 			<groupId>org.wildfly.swarm</groupId>
 			<artifactId>jpa</artifactId>
 		</dependency>
-			
+		
 		<!-- how to handle this -->
 		<dependency>
 			<groupId>com.h2database</groupId>
