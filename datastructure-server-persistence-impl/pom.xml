@@ -14,6 +14,26 @@
 	<artifactId>datastructure-server-persistence-impl</artifactId>
 	<packaging>jar</packaging>
 	
+	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+					<filtering>true</filtering>
+					<includes>
+				        <include>**/META-INF/persistence.xml</include>
+				    </includes>
+				</resource>
+				
+				<resource>
+				    <directory>src/main/resources</directory>
+				    <filtering>false</filtering>
+				    <includes>
+				        <include>**/*.*</include>
+				    </includes>
+				</resource>
+		</resources>
+	</build>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.cyk.system.datastructure.server.persistence</groupId>
@@ -32,8 +52,15 @@
 		<profile>
 			<id>org.cyk.test</id>
 			<properties>
-				<org.cyk.test.swarm.project.defaults.file>project-defaults.yml</org.cyk.test.swarm.project.defaults.file>
+				<org.cyk.test.classes>org.cyk.system.datastructure.server.persistence.impl.integration.DataSourceDefinition</org.cyk.test.classes>
 			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>1.4.197</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 	

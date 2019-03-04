@@ -20,6 +20,11 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 	private static final long serialVersionUID = 1L;
 	
 	@Override
+	protected Class<NestedSet> __getPersistenceEntityClass__() {
+		return NestedSet.class;
+	}
+	
+	@Override
 	protected void __listenExecuteCreateOneBefore__(NestedSet nestedSet, Properties properties,BusinessFunctionCreator function) {
 		super.__listenExecuteCreateOneBefore__(nestedSet, properties, function);
 		function.try_().begin().addRunnables(new Runnable() {

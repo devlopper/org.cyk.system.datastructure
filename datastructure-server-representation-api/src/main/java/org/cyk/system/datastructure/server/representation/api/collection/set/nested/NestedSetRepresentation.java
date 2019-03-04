@@ -10,5 +10,5 @@ import org.cyk.utility.server.representation.RepresentationEntity;
 @Path(NestedSetRepresentation.PATH)
 public interface NestedSetRepresentation extends RepresentationEntity<NestedSet,NestedSetDto,NestedSetDtoCollection> {
 
-	String PATH = "/nestedset/";
+	String PATH = "/nestedset";
 }

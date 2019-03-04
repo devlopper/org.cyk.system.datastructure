@@ -12,4 +12,9 @@ import org.cyk.utility.server.representation.AbstractRepresentationEntityImpl;
 public class NestedSetRepresentationImpl extends AbstractRepresentationEntityImpl<NestedSet, NestedSetBusiness, NestedSetDto,NestedSetDtoCollection> implements NestedSetRepresentation,Serializable {
 	private static final long serialVersionUID = 1L;
 
+	@Override
+	public Class<NestedSet> getPersistenceEntityClass() {
+		return NestedSet.class;
+	}
+	
 }

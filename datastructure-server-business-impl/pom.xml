@@ -31,8 +31,15 @@
 		<profile>
 			<id>org.cyk.test</id>
 			<properties>
-				<org.cyk.test.swarm.project.defaults.file>project-defaults.yml</org.cyk.test.swarm.project.defaults.file>
+				<org.cyk.test.classes>org.cyk.system.datastructure.server.business.impl.integration.collection.set.nested.DataSourceDefinition</org.cyk.test.classes>
 			</properties>
+			<dependencies>
+				<dependency>
+					<groupId>com.h2database</groupId>
+					<artifactId>h2</artifactId>
+					<version>1.4.197</version>
+				</dependency>
+			</dependencies>
 		</profile>
 	</profiles>
 

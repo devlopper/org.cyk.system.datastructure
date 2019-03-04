@@ -5,10 +5,19 @@ import org.cyk.system.datastructure.server.representation.entities.collection.se
 import org.cyk.system.datastructure.server.representation.entities.collection.set.nested.NestedSetDtoCollection;
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.RepresentationEntity;
-import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationEntityIntegrationTestWithDefaultDeploymentAsSwram;
+import org.cyk.utility.server.representation.test.TestRepresentationCreate;
+import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeploymentAsSwram;
+import org.junit.Test;
 
-public class NestedSetRepresentationIntegrationTest extends AbstractRepresentationEntityIntegrationTestWithDefaultDeploymentAsSwram<NestedSetDto> {
+public class NestedSetRepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeploymentAsSwram {
 	private static final long serialVersionUID = 1L;
+	
+	@Test
+	public void createOneNestedSet() {
+		NestedSetDto nestedSetDto = new NestedSetDto();
+		nestedSetDto.setCode("ns01");
+		__inject__(TestRepresentationCreate.class).addObjects(nestedSetDto).execute();
+	}
 	
 	@SuppressWarnings("rawtypes")
 	@Override

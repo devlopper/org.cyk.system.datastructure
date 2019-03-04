@@ -13,6 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.cyk.system.datastructure.server.persistence.entities.Constant;
 import org.cyk.utility.server.persistence.jpa.AbstractEntity;
 
 import lombok.Getter;
