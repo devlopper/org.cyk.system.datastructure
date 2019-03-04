@@ -17,7 +17,7 @@ public class NestedSetDto extends AbstractEntityFromPersistenceEntity implements
 
 	private String group;
 	
-	private String parent;
+	private NestedSetDto parent;
 	
 	private String leftIndex;
 	
