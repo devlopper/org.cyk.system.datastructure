@@ -28,6 +28,12 @@ public class NestedSetDto extends AbstractEntityFromPersistenceEntity implements
 	private String numberOfDescendant;
 	
 	private String numberOfAscendant;
+	
+	@Override
+	public NestedSetDto setCode(String code) {
+		return (NestedSetDto) super.setCode(code);
+	}
+	
 	/*
 	@Override
 	public org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet getPersistenceEntity() {

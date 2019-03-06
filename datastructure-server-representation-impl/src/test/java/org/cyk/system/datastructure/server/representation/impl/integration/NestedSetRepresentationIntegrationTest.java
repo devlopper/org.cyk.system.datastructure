@@ -15,8 +15,34 @@ public class NestedSetRepresentationIntegrationTest extends AbstractRepresentati
 	@Test
 	public void createOneNestedSet() {
 		NestedSetDto nestedSetDto = new NestedSetDto();
-		nestedSetDto.setCode("ns01");
+		nestedSetDto.setCode(__getRandomCode__());
 		__inject__(TestRepresentationCreate.class).addObjects(nestedSetDto).execute();
+	}
+	
+	@Test
+	public void createManyNestedSet() {
+		String geographicZoneCode = __getRandomCode__();
+		String africaCode = __getRandomCode__();
+		String coteDivoireCode = __getRandomCode__();
+		
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(africaCode).setParent(new NestedSetDto().setCode(geographicZoneCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(coteDivoireCode).setParent(new NestedSetDto().setCode(africaCode)));
+		
+		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode, "business").getEntity();
+		assertionHelper.assertNull(geographicZone.getParent());
+		
+		NestedSetDto africa = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(africaCode, "business").getEntity();
+		assertionHelper.assertNotNull(africa.getParent());
+		assertionHelper.assertNull(africa.getParent().getParent());
+		assertionHelper.assertEquals(geographicZoneCode, africa.getParent().getCode());
+		
+		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		assertionHelper.assertNotNull(coteDivoire.getParent());
+		assertionHelper.assertNull(coteDivoire.getParent().getParent());
+		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getCode());
+		
+		
 	}
 	
 	@SuppressWarnings("rawtypes")
