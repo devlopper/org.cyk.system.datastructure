@@ -97,8 +97,10 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					
 					//We will iterate the collection and use create
 					for(NestedSet index : nestedSetsToBeCreated)
-						create(index);
-					
+						create(index);					
+				}else{
+					//simple update
+					getPersistence().update(nestedSet);
 				}
 			}
 		});

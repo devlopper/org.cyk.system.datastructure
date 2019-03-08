@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.cyk.utility.server.representation.AbstractEntityFromPersistenceEntity;
 
 import lombok.Getter;
@@ -34,20 +36,8 @@ public class NestedSetDto extends AbstractEntityFromPersistenceEntity implements
 		return (NestedSetDto) super.setCode(code);
 	}
 	
-	/*
 	@Override
-	public org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet getPersistenceEntity() {
-		org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet persistenceEntity = new org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet();
-		persistenceEntity.setCode(getCode());
-		persistenceEntity.setGroup(group);
-		persistenceEntity.setParent(__getFromBusinessIdentifier__(org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet.class, parent));
-		persistenceEntity.setLeftIndex(__getIntegerFrom__(leftIndex));
-		persistenceEntity.setRightIndex(__getIntegerFrom__(rightIndex));
-		persistenceEntity.setNumberOfChildren(__getIntegerFrom__(numberOfChildren));
-		persistenceEntity.setNumberOfDescendant(__getIntegerFrom__(numberOfDescendant));
-		persistenceEntity.setNumberOfAscendant(__getIntegerFrom__(numberOfAscendant));
-		return persistenceEntity;
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this,ToStringStyle.MULTI_LINE_STYLE);
 	}
-	*/
-	
 }

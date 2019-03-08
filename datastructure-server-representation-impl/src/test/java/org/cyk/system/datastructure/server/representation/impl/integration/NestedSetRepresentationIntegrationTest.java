@@ -41,8 +41,53 @@ public class NestedSetRepresentationIntegrationTest extends AbstractRepresentati
 		assertionHelper.assertNotNull(coteDivoire.getParent());
 		assertionHelper.assertNull(coteDivoire.getParent().getParent());
 		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getCode());
+	}
+	
+	@Test
+	public void updateCodeOneNestedSet() {
+		String geographicZoneCode01 = "01_"+__getRandomCode__();
 		
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode01));
 		
+		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, "business").getEntity();
+		assertionHelper.assertNull(geographicZone.getParent());
+
+		String geographicZoneCode02 = "02_"+__getRandomCode__();
+		geographicZone.setCode(geographicZoneCode02);
+		__inject__(NestedSetRepresentation.class).updateOne(geographicZone, "code");
+		
+		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, "business").getEntity();
+		assertionHelper.assertNull(geographicZone);
+		
+		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode02, "business").getEntity();
+		assertionHelper.assertNotNull(geographicZone);
+	}
+	
+	@Test
+	public void updateParentOneNestedSet() {
+		String geographicZoneCode = "ZG_"+__getRandomCode__();
+		String africaCode = "AF_"+__getRandomCode__();
+		String coteDivoireCode = "CI_"+__getRandomCode__();
+		
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(africaCode).setParent(new NestedSetDto().setCode(geographicZoneCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(coteDivoireCode).setParent(new NestedSetDto().setCode(africaCode)));
+		
+		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		assertionHelper.assertNotNull(coteDivoire.getParent());
+		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getCode());
+		assertionHelper.assertEquals("2", coteDivoire.getLeftIndex());
+		assertionHelper.assertEquals("3", coteDivoire.getRightIndex());
+		
+		//coteDivoire.getParent().setIdentifier(null);//object should not be linked using identifier but code instead
+		coteDivoire.getParent().setCode(geographicZoneCode);
+		__inject__(NestedSetRepresentation.class).updateOne(coteDivoire, "code,parent");
+		
+		coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		assertionHelper.assertNotNull(coteDivoire.getParent());
+		assertionHelper.assertEquals(geographicZoneCode, coteDivoire.getParent().getCode());
+		assertionHelper.assertEquals("3", coteDivoire.getLeftIndex());
+		assertionHelper.assertEquals("4", coteDivoire.getRightIndex());
 	}
 	
 	@SuppressWarnings("rawtypes")

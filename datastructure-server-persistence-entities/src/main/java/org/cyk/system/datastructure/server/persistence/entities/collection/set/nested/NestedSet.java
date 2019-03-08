@@ -81,7 +81,7 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	@Override
 	public String toString() {
-		return getCode()+","+getLeftIndex()+","+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant();
+		return getCode()+","+getLeftIndex()+","+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant()+(getParent() == null ? "" : ",P="+getParent().getCode());
 	}
 	
 	/**/
