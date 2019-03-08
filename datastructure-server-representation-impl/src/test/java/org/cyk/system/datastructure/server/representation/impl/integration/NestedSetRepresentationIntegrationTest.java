@@ -79,7 +79,6 @@ public class NestedSetRepresentationIntegrationTest extends AbstractRepresentati
 		assertionHelper.assertEquals("2", coteDivoire.getLeftIndex());
 		assertionHelper.assertEquals("3", coteDivoire.getRightIndex());
 		
-		//coteDivoire.getParent().setIdentifier(null);//object should not be linked using identifier but code instead
 		coteDivoire.getParent().setCode(geographicZoneCode);
 		__inject__(NestedSetRepresentation.class).updateOne(coteDivoire, "code,parent");
 		
