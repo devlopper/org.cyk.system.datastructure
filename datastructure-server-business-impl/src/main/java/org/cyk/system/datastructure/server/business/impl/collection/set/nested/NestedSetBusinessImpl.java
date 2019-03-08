@@ -147,5 +147,65 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				result.add(nestedSetNode);
 		return result;
 	}
+
+	
+	@Override
+	public Collection<NestedSet> findByGroup(String group) {
+		return getPersistence().readByGroup(group);
+	}
+
+	
+	@Override
+	public Long countByGroup(String group) {
+		return getPersistence().countByGroup(group);
+	}
+
+	
+	@Override
+	public Collection<NestedSet> findByParent(NestedSet nestedSet, Properties properties) {
+		return getPersistence().readByParent(nestedSet, properties);
+	}
+
+	
+	@Override
+	public Collection<NestedSet> findByParent(NestedSet nestedSet) {
+		return findByParent(nestedSet,null);
+	}
+
+	
+	@Override
+	public Collection<NestedSet> findByParent(String nestedSetCode, Properties properties) {
+		return getPersistence().readByParent(nestedSetCode,properties);
+	}
+
+	
+	@Override
+	public Collection<NestedSet> findByParent(String nestedSetCode) {
+		return findByParent(nestedSetCode,null);
+	}
+
+	
+	@Override
+	public Long countByParent(NestedSet nestedSet, Properties properties) {
+		return getPersistence().countByParent(nestedSet, properties);
+	}
+
+	
+	@Override
+	public Long countByParent(NestedSet nestedSet) {
+		return countByParent(nestedSet,null);
+	}
+
+	
+	@Override
+	public Long countByParent(String nestedSetCode, Properties properties) {
+		return getPersistence().countByParent(nestedSetCode, properties);
+	}
+
+	
+	@Override
+	public Long countByParent(String nestedSetCode) {
+		return countByParent(nestedSetCode, null);
+	}
 	
 }
