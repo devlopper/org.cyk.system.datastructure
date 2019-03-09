@@ -566,6 +566,58 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_27_28,g01_26_29, 27, 28, 0, 0, 3);
 	}
 	
+	/**
+	 * <img src="move_2_7_to_9_10.png" />
+	 */
+	@Test
+	public void move_NestedSetWithSubNested(){
+		String zg = "zg_"+__getRandomCode__();
+		String zg_africa = "africa_"+generateCode(zg,0),zg_europa = "europa_"+generateCode(zg,0);
+		String zg_ci = "ci_"+generateCode(zg_africa,1);
+		String zg_abidjan = "abidjan_"+generateCode(zg_ci,2),zg_bouake = "bouake_"+generateCode(zg_ci,2);
+		
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_africa).setParentFromCode(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_europa).setParentFromCode(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_ci).setParentFromCode(zg_africa));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_abidjan).setParentFromCode(zg_ci));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_bouake).setParentFromCode(zg_ci));
+		
+		/*
+		//createNestedSets(zg, null, zg);
+		createNestedSets(null, zg, zg_africa,zg_europa);
+		createNestedSets(null, zg_africa, zg_ci);
+		createNestedSets(null, zg_ci, zg_abidjan,zg_bouake);
+		*/
+		assertGroup(zg, 6);
+		assertNestedSet(zg,null, 0, 11, 2, 5, 0);
+		assertNestedSet(zg_africa,zg, 1, 8, 1, 3, 1);
+		assertNestedSet(zg_europa,zg, 9, 10, 0, 0, 1);
+		assertNestedSet(zg_ci,zg_africa, 2, 7, 2, 2, 2);
+		assertNestedSet(zg_abidjan,zg_ci, 3, 4, 0, 0, 3);
+		assertNestedSet(zg_bouake,zg_ci, 5, 6, 0, 0, 3);
+		
+		moveNestedSet(zg_ci,zg_europa);
+		
+		assertGroup(zg, 6);
+		assertNestedSet(zg,null, 0, 11, 2, 5, 0);
+		assertNestedSet(zg_africa,zg, 1, 2, 0, 0, 1);
+		assertNestedSet(zg_europa,zg, 3, 10, 1, 3, 1);
+		assertNestedSet(zg_ci,zg_europa, 4, 9, 2, 2, 2);
+		assertNestedSet(zg_abidjan,zg_ci, 5, 6, 0, 0, 3);
+		assertNestedSet(zg_bouake,zg_ci, 7, 8, 0, 0, 3);
+		
+		moveNestedSet(zg_ci,zg_africa);
+		
+		assertGroup(zg, 6);
+		assertNestedSet(zg,null, 0, 11, 2, 5, 0);
+		assertNestedSet(zg_africa,zg, 1, 8, 1, 3, 1);
+		assertNestedSet(zg_europa,zg, 9, 10, 0, 0, 1);
+		assertNestedSet(zg_ci,zg_africa, 2, 7, 2, 2, 2);
+		assertNestedSet(zg_abidjan,zg_ci, 3, 4, 0, 0, 3);
+		assertNestedSet(zg_bouake,zg_ci, 5, 6, 0, 0, 3);
+	}
+	
 	/**/
 	
 	@Test
