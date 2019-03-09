@@ -31,8 +31,11 @@ public interface NestedSetPersistence extends PersistenceEntity<NestedSet> {
 	Long countByDescendant(String nestedSetCode,Properties properties);
 	Long countByDescendant(String nestedSetCode);
 	*/
-	Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetween(String group,Integer leftIndex,Integer rightIndex);
-	Long countByGroupWhereLeftIndexAndRightIndexBetween(String group,Integer leftIndex,Integer rightIndex);
+	Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(String group,Integer leftIndex,Integer rightIndex);
+	Long countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(String group,Integer leftIndex,Integer rightIndex);
+	
+	Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending(String group,Integer leftIndex,Integer rightIndex);
+	Long countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending(String group,Integer leftIndex,Integer rightIndex);
 	
 	Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetween(NestedSet nestedSet);
 	Long countByGroupWhereLeftIndexAndRightIndexBetween(NestedSet nestedSet);

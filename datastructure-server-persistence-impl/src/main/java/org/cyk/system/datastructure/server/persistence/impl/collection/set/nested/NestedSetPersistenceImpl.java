@@ -20,8 +20,8 @@ import org.cyk.utility.sql.builder.QueryStringBuilderSelect;
 public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<NestedSet> implements NestedSetPersistence, Serializable {
 	private static final long serialVersionUID = 1L;
 
-	private String readByGroup,readByParent,readByGroupByLeftOrRightGreaterThanOrEqualTo,readByGroupWhereLeftIndexAndRightIndexBetween
-	,readByGroupWhereLeftIndexAndRightIndexContain
+	private String readByGroup,readByParent,readByGroupByLeftOrRightGreaterThanOrEqualTo,readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending
+		,readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending,readByGroupWhereLeftIndexAndRightIndexContain
 		,executeIncrementLeftIndex,executeIncrementRightIndex,executeIncrementNumberOfChildren
 		,executeDelete,executeDeleteByGroupWhereLeftIndexAndRightIndexBetween
 		,executeIncrementLeftIndexAndRightIndexByGroupByLeftIndexOrRightIndexGreaterThanOrEqualToByLeftIndexGreaterThan
@@ -40,12 +40,15 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 				.getWherePredicateBuilderAsEqual().addOperandBuilderByAttribute(NestedSet.FIELD_PARENT,ComparisonOperator.EQ)
 				.getParentAsWhereClause().getParentAs(QueryStringBuilderSelect.class));
 		
-		addQueryCollectInstances(readByGroupWhereLeftIndexAndRightIndexBetween, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
+		addQueryCollectInstancesReadByGroupWhereLeftIndexAndRightIndexBetween(readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending,SortOrder.DESCENDING);
+		addQueryCollectInstancesReadByGroupWhereLeftIndexAndRightIndexBetween(readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending,SortOrder.ASCENDING);
+		/*
+		addQueryCollectInstances(readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT)
 				.and().addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause()
 				.getParentAs(QueryStringBuilderSelect.class).orderBy(NestedSet.FIELD_RIGHT_INDEX,SortOrder.DESCENDING));
-		
+		*/
 		addQueryCollectInstances(readByGroupWhereLeftIndexAndRightIndexContain, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
 				.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.LT)
@@ -87,6 +90,14 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 				+ " AND nestedSet.leftIndex > :leftIndex AND nestedSet.rightIndex < :rightIndex",null);
 	}
 	
+	private void addQueryCollectInstancesReadByGroupWhereLeftIndexAndRightIndexBetween(Object identifier,SortOrder rightIndexSortOrder) {
+		addQueryCollectInstances(identifier, __instanciateQuerySelect__().getWherePredicateBuilderAsGroup()
+				.addOperandBuilderByAttribute(NestedSet.FIELD_GROUP,ComparisonOperator.EQ).and()
+				.addOperandBuilderByAttribute(NestedSet.FIELD_LEFT_INDEX,ComparisonOperator.GT)
+				.and().addOperandBuilderByAttribute(NestedSet.FIELD_RIGHT_INDEX,ComparisonOperator.LT).getParentAsWhereClause()
+				.getParentAs(QueryStringBuilderSelect.class).orderBy(NestedSet.FIELD_RIGHT_INDEX,rightIndexSortOrder));
+	}
+	
 	@SuppressWarnings("unchecked")
 	protected Object[] __getQueryParameters__(String queryIdentifier,Object...objects){
 		PersistenceQuery persistenceQuery = __inject__(PersistenceQueryRepository.class).getBySystemIdentifier(queryIdentifier);
@@ -97,7 +108,10 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByParent,queryIdentifier))
 			return new Object[]{NestedSet.FIELD_PARENT, objects[0]};
 		
-		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByGroupWhereLeftIndexAndRightIndexBetween,queryIdentifier))
+		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending,queryIdentifier))
+			return new Object[]{NestedSet.FIELD_GROUP, objects[0],NestedSet.FIELD_LEFT_INDEX,objects[1],NestedSet.FIELD_RIGHT_INDEX,objects[2]};
+		
+		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending,queryIdentifier))
 			return new Object[]{NestedSet.FIELD_GROUP, objects[0],NestedSet.FIELD_LEFT_INDEX,objects[1],NestedSet.FIELD_RIGHT_INDEX,objects[2]};
 		
 		if(persistenceQuery.isIdentifierEqualsToOrQueryDerivedFromQueryIdentifierEqualsTo(readByGroupWhereLeftIndexAndRightIndexContain,queryIdentifier))
@@ -198,23 +212,33 @@ public class NestedSetPersistenceImpl extends AbstractPersistenceEntityImpl<Nest
 	}
 	
 	@Override
-	public Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetween(String group, Integer leftIndex,Integer rightIndex) {
+	public Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(String group, Integer leftIndex,Integer rightIndex) {
 		return __readMany__(____getQueryParameters____(group,leftIndex,rightIndex));
 	}
 	
 	@Override
-	public Long countByGroupWhereLeftIndexAndRightIndexBetween(String group, Integer leftIndex, Integer rightIndex) {
+	public Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending(String group, Integer leftIndex,Integer rightIndex) {
+		return __readMany__(____getQueryParameters____(group,leftIndex,rightIndex));
+	}
+	
+	@Override
+	public Long countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(String group, Integer leftIndex, Integer rightIndex) {
+		return __count__(____getQueryParameters____(group,leftIndex,rightIndex));
+	}
+	
+	@Override
+	public Long countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexAscending(String group, Integer leftIndex, Integer rightIndex) {
 		return __count__(____getQueryParameters____(group,leftIndex,rightIndex));
 	}
 	
 	@Override
 	public Collection<NestedSet> readByGroupWhereLeftIndexAndRightIndexBetween(NestedSet nestedSet) {
-		return readByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(), nestedSet.getLeftIndex(), nestedSet.getRightIndex());
+		return readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(nestedSet.getGroup(), nestedSet.getLeftIndex(), nestedSet.getRightIndex());
 	}
 	
 	@Override
 	public Long countByGroupWhereLeftIndexAndRightIndexBetween(NestedSet nestedSet) {
-		return countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(), nestedSet.getLeftIndex(), nestedSet.getRightIndex());
+		return countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(nestedSet.getGroup(), nestedSet.getLeftIndex(), nestedSet.getRightIndex());
 	}
 	
 	@Override

@@ -81,7 +81,7 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	@Override
 	public String toString() {
-		return getCode()+","+getLeftIndex()+","+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant()+(getParent() == null ? "" : ",P="+getParent().getCode());
+		return getCode()+","+getLeftIndex()+"-"+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant()+(getParent() == null ? "" : ",P="+getParent().getCode());
 	}
 	
 	/**/
@@ -90,13 +90,14 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	public static final String FIELD_PARENT = "parent";
 	public static final String FIELD_LEFT_INDEX = "leftIndex";
 	public static final String FIELD_RIGHT_INDEX = "rightIndex";
+	public static final String FIELD_ORDER_INDEX = "orderIndex";
 	public static final String FIELD_NUMBER_OF_CHILDREN = "numberOfChildren";
 	public static final String FIELD_NUMBER_OF_DESCENDANT = "numberOfDescendant";
 	
 	public static final String COLUMN_PARENT = FIELD_PARENT;
 	public static final String COLUMN_GROUP = FIELD_GROUP+"_";
 	
-	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"NestedSet";
+	public static final String TABLE = Constant.TABLE_NAME_PREFIX+"nestedset";
 	public static final String TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE = "LeftIndexIsUnique";
 	public static final String TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE = "RightIndexIsUnique";
 	

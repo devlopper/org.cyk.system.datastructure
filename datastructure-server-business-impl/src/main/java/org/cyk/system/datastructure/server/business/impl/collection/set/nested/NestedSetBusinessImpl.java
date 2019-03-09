@@ -3,12 +3,15 @@ package org.cyk.system.datastructure.server.business.impl.collection.set.nested;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import javax.inject.Singleton;
 
 import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
+import org.cyk.utility.__kernel__.computation.SortOrder;
 import org.cyk.utility.__kernel__.properties.Properties;
 import org.cyk.utility.server.business.AbstractBusinessEntityImpl;
 import org.cyk.utility.server.business.BusinessFunctionCreator;
@@ -74,36 +77,43 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				Boolean hasBeenMoved = Boolean.TRUE.equals(hasBeenMoved(nestedSetInDb.getParent(), nestedSet.getParent()));
 				if(hasBeenMoved){
 					//Move nested set to its new parent
-					//1 - get the nested sets instances
-					Collection<NestedSet> nestedSets = getPersistence().readByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(), nestedSet.getLeftIndex()-1, nestedSet.getRightIndex()+1);
-					//2 - delete nested set from its current parent
+					//1 - get the nested sets instances to be moved
+					Collection<NestedSet> nestedSetsToBeMoved = getPersistence().readByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(nestedSet.getGroup(), nestedSet.getLeftIndex()-1, nestedSet.getRightIndex()+1);
+					//2 - sort the nested sets instances to be moved. parent first then children
+					Collections.sort((List<NestedSet>)nestedSetsToBeMoved, new NestedSetComparator().setSortOrder(SortOrder.ASCENDING));
+					//3 - delete nested set from its current parent
 					delete(nestedSetInDb);
-					//3 - instantiate nested sets under the new parent
+					//4 - instantiate nested sets under the new parent
 					Collection<NestedSet> nestedSetsToBeCreated = new ArrayList<>();
-					for(NestedSet index : nestedSets){
-						NestedSet nestedSetToBeCreated = new NestedSet().setCode(index.getCode()).setGroup(index.getGroup());
-						for(NestedSet indexNestedSetToBeCreated : nestedSetsToBeCreated)
-							if(indexNestedSetToBeCreated.getCode().equals(index.getParent().getCode())){
-								nestedSetToBeCreated.setParent(getPersistence().readOne(indexNestedSetToBeCreated.getIdentifier()));
-								break;
-							}
-						if(nestedSetToBeCreated.getParent() == null)
-							nestedSetToBeCreated.setParent(getPersistence().readOne(nestedSet.getParent().getIdentifier()));
+					for(NestedSet indexNestedSetToBeMoved : nestedSetsToBeMoved){
+						NestedSet nestedSetToBeCreated = new NestedSet();
+						nestedSetToBeCreated.setCode(indexNestedSetToBeMoved.getCode());
+						nestedSetToBeCreated.setGroup(indexNestedSetToBeMoved.getGroup());
 						nestedSetsToBeCreated.add(nestedSetToBeCreated);
 					}
-					//4 - create nested sets under the new parent
-					//TODO We are get validation issue (left index which is null) when using createMany.
-					//createMany(nestedSetsToBeCreated);
-					
+					//5 - create nested sets under the new parent
 					//We will iterate the collection and use create
-					for(NestedSet index : nestedSetsToBeCreated)
-						create(index);					
+					for(NestedSet nestedSetToBeCreated : nestedSetsToBeCreated) {
+						//link to the parent
+						if(nestedSetToBeCreated.getCode().equals(nestedSet.getCode()))
+							nestedSetToBeCreated.setParent(getPersistence().readOne(nestedSet.getParent().getIdentifier()));
+						else
+							nestedSetToBeCreated.setParent(getPersistence().readOneByBusinessIdentifier(__getParentCode__(nestedSetToBeCreated,nestedSetsToBeMoved)));
+						create(nestedSetToBeCreated);					
+					}
 				}else{
 					//simple update
 					getPersistence().update(nestedSet);
 				}
 			}
 		});
+	}
+	
+	private String __getParentCode__(NestedSet nestedSet,Collection<NestedSet> nestedSets) {
+		for(NestedSet index : nestedSets)
+			if(index.getCode().equals(nestedSet.getCode()))
+				return index.getParent() == null ? null :index.getParent().getCode();
+		return null;
 	}
 	
 	private Boolean hasBeenMoved(NestedSet source,NestedSet destination){
@@ -127,7 +137,7 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 			public void run() {
 				Integer leftIndex = nestedSet.getLeftIndex()-1;
 				Integer rightIndex = nestedSet.getRightIndex()+1;
-				Integer increment = -getPersistence().countByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),leftIndex,rightIndex).intValue()*2;
+				Integer increment = -getPersistence().countByGroupWhereLeftIndexAndRightIndexBetweenOrderByRightIndexDescending(nestedSet.getGroup(),leftIndex,rightIndex).intValue()*2;
 				//Delete the tree
 				getPersistence().executeDeleteByGroupWhereLeftIndexAndRightIndexBetween(nestedSet.getGroup(),leftIndex,rightIndex);
 				//Decrement indexes
