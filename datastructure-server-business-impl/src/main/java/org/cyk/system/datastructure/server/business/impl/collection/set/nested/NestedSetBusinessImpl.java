@@ -36,7 +36,7 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 				if(nestedSet.getParent() == null){
 					nestedSet.setLeftIndex(0);//First set
 					if(__injectStringHelper__().isBlank(nestedSet.getGroup())) {
-						nestedSet.setGroup(nestedSet.getCode());
+						nestedSet.setGroup(nestedSet.getIdentifier());
 					}
 				}else {		
 					NestedSet parent = nestedSet.getParent();
@@ -87,7 +87,7 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					Collection<NestedSet> nestedSetsToBeCreated = new ArrayList<>();
 					for(NestedSet indexNestedSetToBeMoved : nestedSetsToBeMoved){
 						NestedSet nestedSetToBeCreated = new NestedSet();
-						nestedSetToBeCreated.setCode(indexNestedSetToBeMoved.getCode());
+						nestedSetToBeCreated.setIdentifier(indexNestedSetToBeMoved.getIdentifier());
 						nestedSetToBeCreated.setGroup(indexNestedSetToBeMoved.getGroup());
 						nestedSetsToBeCreated.add(nestedSetToBeCreated);
 					}
@@ -95,10 +95,10 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 					//We will iterate the collection and use create
 					for(NestedSet nestedSetToBeCreated : nestedSetsToBeCreated) {
 						//link to the parent
-						if(nestedSetToBeCreated.getCode().equals(nestedSet.getCode()))
+						if(nestedSetToBeCreated.getIdentifier().equals(nestedSet.getIdentifier()))
 							nestedSetToBeCreated.setParent(getPersistence().readOne(nestedSet.getParent().getIdentifier()));
 						else
-							nestedSetToBeCreated.setParent(getPersistence().readOneByBusinessIdentifier(__getParentCode__(nestedSetToBeCreated,nestedSetsToBeMoved)));
+							nestedSetToBeCreated.setParent(getPersistence().readOneBySystemIdentifier(__getParentCode__(nestedSetToBeCreated,nestedSetsToBeMoved)));
 						create(nestedSetToBeCreated);					
 					}
 				}else{
@@ -111,8 +111,8 @@ public class NestedSetBusinessImpl extends AbstractBusinessEntityImpl<NestedSet,
 	
 	private String __getParentCode__(NestedSet nestedSet,Collection<NestedSet> nestedSets) {
 		for(NestedSet index : nestedSets)
-			if(index.getCode().equals(nestedSet.getCode()))
-				return index.getParent() == null ? null :index.getParent().getCode();
+			if(index.getIdentifier().equals(nestedSet.getIdentifier()))
+				return index.getParent() == null ? null :index.getParent().getIdentifier();
 		return null;
 	}
 	

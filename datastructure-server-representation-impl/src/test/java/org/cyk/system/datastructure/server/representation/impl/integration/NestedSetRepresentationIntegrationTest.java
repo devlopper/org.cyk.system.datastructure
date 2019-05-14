@@ -6,62 +6,66 @@ import org.cyk.system.datastructure.server.representation.entities.collection.se
 import org.cyk.utility.server.representation.AbstractEntityCollection;
 import org.cyk.utility.server.representation.RepresentationEntity;
 import org.cyk.utility.server.representation.test.TestRepresentationCreate;
-import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeploymentAsSwram;
+import org.cyk.utility.server.representation.test.arquillian.AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment;
 import org.junit.Test;
 
-public class NestedSetRepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeploymentAsSwram {
+public class NestedSetRepresentationIntegrationTest extends AbstractRepresentationArquillianIntegrationTestWithDefaultDeployment {
 	private static final long serialVersionUID = 1L;
 	
 	@Test
 	public void createOneNestedSet() {
 		NestedSetDto nestedSetDto = new NestedSetDto();
-		nestedSetDto.setCode(__getRandomCode__());
+		nestedSetDto.setIdentifier(__getRandomCode__());
 		__inject__(TestRepresentationCreate.class).addObjects(nestedSetDto).execute();
 	}
 	
 	@Test
 	public void createManyNestedSet() {
 		String geographicZoneCode = __getRandomCode__();
-		String africaCode = __getRandomCode__();
-		String coteDivoireCode = __getRandomCode__();
+		String africaCode = "AFRICA_"+__getRandomCode__();
+		String coteDivoireCode = "COTE_IVOIRE_"+__getRandomCode__();
 		
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode));
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(africaCode).setParent(new NestedSetDto().setCode(geographicZoneCode)));
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(coteDivoireCode).setParent(new NestedSetDto().setCode(africaCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(geographicZoneCode));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(africaCode).setParent(new NestedSetDto().setIdentifier(geographicZoneCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(coteDivoireCode).setParent(new NestedSetDto().setIdentifier(africaCode)));
 		
-		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode, "business").getEntity();
+		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode, null,null).getEntity();
+		assertionHelper.assertNotNull(geographicZone);
+		assertionHelper.assertEquals(geographicZoneCode, geographicZone.getIdentifier());
 		assertionHelper.assertNull(geographicZone.getParent());
 		
-		NestedSetDto africa = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(africaCode, "business").getEntity();
+		NestedSetDto africa = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(africaCode, null,null).getEntity();
+		assertionHelper.assertNotNull(africa);
+		assertionHelper.assertEquals(africaCode, africa.getIdentifier());
 		assertionHelper.assertNotNull(africa.getParent());
 		assertionHelper.assertNull(africa.getParent().getParent());
-		assertionHelper.assertEquals(geographicZoneCode, africa.getParent().getCode());
+		assertionHelper.assertEquals(geographicZoneCode, africa.getParent().getIdentifier());
 		
-		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, null,null).getEntity();
 		assertionHelper.assertNotNull(coteDivoire.getParent());
 		assertionHelper.assertNull(coteDivoire.getParent().getParent());
-		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getCode());
+		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getIdentifier());
 	}
 	
-	@Test
+	/*@Test
 	public void updateCodeOneNestedSet() {
 		String geographicZoneCode01 = "01_"+__getRandomCode__();
 		
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode01));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(geographicZoneCode01));
 		
-		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, "business").getEntity();
+		NestedSetDto geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, null,null).getEntity();
 		assertionHelper.assertNull(geographicZone.getParent());
 
 		String geographicZoneCode02 = "02_"+__getRandomCode__();
-		geographicZone.setCode(geographicZoneCode02);
+		geographicZone.setIdentifier(geographicZoneCode02);
 		__inject__(NestedSetRepresentation.class).updateOne(geographicZone, "code");
 		
-		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, "business").getEntity();
+		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode01, null,null).getEntity();
 		assertionHelper.assertNull(geographicZone);
 		
-		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode02, "business").getEntity();
+		geographicZone = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(geographicZoneCode02, null,null).getEntity();
 		assertionHelper.assertNotNull(geographicZone);
-	}
+	}*/
 	
 	@Test
 	public void updateParentOneNestedSet() {
@@ -69,22 +73,22 @@ public class NestedSetRepresentationIntegrationTest extends AbstractRepresentati
 		String africaCode = "AF_"+__getRandomCode__();
 		String coteDivoireCode = "CI_"+__getRandomCode__();
 		
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(geographicZoneCode));
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(africaCode).setParent(new NestedSetDto().setCode(geographicZoneCode)));
-		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setCode(coteDivoireCode).setParent(new NestedSetDto().setCode(africaCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(geographicZoneCode));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(africaCode).setParent(new NestedSetDto().setIdentifier(geographicZoneCode)));
+		__inject__(NestedSetRepresentation.class).createOne(new NestedSetDto().setIdentifier(coteDivoireCode).setParent(new NestedSetDto().setIdentifier(africaCode)));
 		
-		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		NestedSetDto coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, null,null).getEntity();
 		assertionHelper.assertNotNull(coteDivoire.getParent());
-		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getCode());
+		assertionHelper.assertEquals(africaCode, coteDivoire.getParent().getIdentifier());
 		assertionHelper.assertEquals("2", coteDivoire.getLeftIndex());
 		assertionHelper.assertEquals("3", coteDivoire.getRightIndex());
 		
-		coteDivoire.getParent().setCode(geographicZoneCode);
-		__inject__(NestedSetRepresentation.class).updateOne(coteDivoire, "code,parent");
+		coteDivoire.getParent().setIdentifier(geographicZoneCode);
+		__inject__(NestedSetRepresentation.class).updateOne(coteDivoire, "parent");
 		
-		coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, "business").getEntity();
+		coteDivoire = (NestedSetDto) __inject__(NestedSetRepresentation.class).getOne(coteDivoireCode, null,null).getEntity();
 		assertionHelper.assertNotNull(coteDivoire.getParent());
-		assertionHelper.assertEquals(geographicZoneCode, coteDivoire.getParent().getCode());
+		assertionHelper.assertEquals(geographicZoneCode, coteDivoire.getParent().getIdentifier());
 		assertionHelper.assertEquals("3", coteDivoire.getLeftIndex());
 		assertionHelper.assertEquals("4", coteDivoire.getRightIndex());
 	}

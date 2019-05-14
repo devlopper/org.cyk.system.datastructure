@@ -17,7 +17,7 @@ public class NestedSetAssertionsProviderImpl extends AbstractAssertionsProviderF
 	@Override
 	protected void ____execute____(Function<?,?> function,Object filter, NestedSet nestedSet) {
 		if(function instanceof BusinessFunctionCreator) {
-			nestedSet = __inject__(NestedSetPersistence.class).readOneByBusinessIdentifier(((NestedSet) ((BusinessFunction)function).getEntity()).getCode());
+			nestedSet = __inject__(NestedSetPersistence.class).readOneBySystemIdentifier(((NestedSet) ((BusinessFunction)function).getEntity()).getIdentifier());
 			if(filter==null) {
 				//assert leftIndex > -1
 				__injectAssertionBuilderComparison__()

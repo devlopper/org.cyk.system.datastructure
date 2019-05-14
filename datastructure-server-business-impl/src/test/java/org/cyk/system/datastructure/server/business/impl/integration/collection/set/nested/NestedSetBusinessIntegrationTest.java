@@ -5,12 +5,12 @@ import static org.cyk.system.datastructure.server.persistence.entities.collectio
 import org.cyk.system.datastructure.server.business.api.collection.set.nested.NestedSetBusiness;
 import org.cyk.system.datastructure.server.persistence.api.collection.set.nested.NestedSetPersistence;
 import org.cyk.system.datastructure.server.persistence.entities.collection.set.nested.NestedSet;
-import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram;
+import org.cyk.utility.server.business.test.arquillian.AbstractBusinessEntityIntegrationTestWithDefaultDeployment;
 import org.cyk.utility.value.ValueUsageType;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityIntegrationTestWithDefaultDeploymentAsSwram<NestedSet> {
+public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityIntegrationTestWithDefaultDeployment<NestedSet> {
 	private static final long serialVersionUID = 1L;
 	
 	@Test
@@ -20,7 +20,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		createNestedSets(g01, null, g01_0_1);
 		assertGroup(g01, 1);
 		assertNestedSet(g01_0_1,null, 0, 1, 0, 0, 0);
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_1);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_0_1);
 		assertGroup(g01, 0);
 		//clean
 		__deleteEntitiesAll__(NestedSet.class);
@@ -38,7 +38,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_0_3,null, 0, 3, 1, 1, 0);
 		assertNestedSet(g01_1_2,g01_0_3, 1, 2, 0, 0, 1);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_1_2);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_1_2);
 		
 		assertNestedSet(g01_0_3,null, 0, 1, 0, 0, 0);
 		
@@ -59,7 +59,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_0_3,null, 0, 3, 1, 1, 0);
 		assertNestedSet(g01_1_2,g01_0_3, 1, 2, 0, 0, 1);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_3);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_0_3);
 		
 		assertGroup(g01, 0);
 		//clean
@@ -79,7 +79,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
 		assertNestedSet(g01_3_4,g01_0_5, 3, 4, 0, 0, 1);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_3_4);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_3_4);
 		
 		assertGroup(g01, 2);
 		assertNestedSet(g01_0_5,null, 0, 3, 1, 1, 0);
@@ -102,7 +102,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_1_2,g01_0_5, 1, 2, 0, 0, 1);
 		assertNestedSet(g01_3_4,g01_0_5, 3, 4, 0, 0, 1);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_5);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_0_5);
 		
 		assertGroup(g01, 0);
 	}
@@ -152,7 +152,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0, 3);
 		assertNestedSet(g01_27_28,g01_26_29, 27, 28, 0, 0, 3);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_27_28);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_27_28);
 		assertGroup(g01, 15);
 		
 		assertNestedSet(g01_0_31,null, 0, 29, 3, 14, 0);
@@ -174,7 +174,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_21_22,g01_20_25, 21, 22, 0, 0, 3);
 		assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0, 3);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_0_31);
 		assertGroup(g01, 0);
 		
 		//clean
@@ -375,7 +375,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		.assertNestedSet(g01_23_24,g01_20_25, 23, 24, 0, 0,3)
 		;
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_0_31);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_0_31);
 		assertGroup(g01, 0);
 		
 		//clean
@@ -399,7 +399,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
 		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_2_3);
 		
 		assertGroup(g01, 3);
 		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
@@ -414,7 +414,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_5_6,g01_0_7, 5, 6, 0, 0, 1);
 		assertNestedSet(g01_2_3,g01_1_4, 2, 3, 0, 0, 2);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_2_3);
 		
 		assertGroup(g01, 3);
 		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
@@ -429,7 +429,7 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		assertNestedSet(g01_5_6,g01_0_7, 3, 6, 1, 1, 1);
 		assertNestedSet(g01_2_3,g01_5_6, 4, 5, 0, 0, 2);
 		
-		__deleteEntityByBusinessIdentifier__(NestedSet.class, g01_2_3);
+		__deleteEntityBySystemIdentifier__(NestedSet.class, g01_2_3);
 		
 		assertGroup(g01, 3);
 		assertNestedSet(g01_0_7,null, 0, 5, 2, 2, 0);
@@ -576,12 +576,12 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 		String zg_ci = "ci_"+generateCode(zg_africa,1);
 		String zg_abidjan = "abidjan_"+generateCode(zg_ci,2),zg_bouake = "bouake_"+generateCode(zg_ci,2);
 		
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg));
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_africa).setParentFromCode(zg));
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_europa).setParentFromCode(zg));
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_ci).setParentFromCode(zg_africa));
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_abidjan).setParentFromCode(zg_ci));
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setCode(zg_bouake).setParentFromCode(zg_ci));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg_africa).setParentFromIdentifier(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg_europa).setParentFromIdentifier(zg));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg_ci).setParentFromIdentifier(zg_africa));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg_abidjan).setParentFromIdentifier(zg_ci));
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(zg).setIdentifier(zg_bouake).setParentFromIdentifier(zg_ci));
 		
 		/*
 		//createNestedSets(zg, null, zg);
@@ -623,8 +623,8 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	@Test
 	public void create___groupWithOneNestedSet_negativeIndexes(){
 		String code = __getRandomCode__();
-		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(__getRandomCode__()).setCode(code).setLeftIndex(-2).setRightIndex(-1));
-		NestedSet nestedSet = __inject__(NestedSetBusiness.class).findOneByBusinessIdentifier(code);
+		__inject__(NestedSetBusiness.class).create(new NestedSet().setGroup(__getRandomCode__()).setIdentifier(code).setLeftIndex(-2).setRightIndex(-1));
+		NestedSet nestedSet = __inject__(NestedSetBusiness.class).findOneBySystemIdentifier(code);
 		nestedSet.setLeftIndex(-2).setRightIndex(-1);
 		__inject__(NestedSetBusiness.class).update(nestedSet);
 	}
@@ -637,9 +637,9 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	}
 	
 	private NestedSetBusinessIntegrationTest assertNestedSet(String code,String parentCode,Integer leftIndex,Integer rightIndex,Integer numberOfChildren,Integer numberOfDescendant,Integer numberOfAscendant){
-		NestedSet nestedSet = __inject__(NestedSetPersistence.class).readOneByBusinessIdentifier(code);
+		NestedSet nestedSet = __inject__(NestedSetPersistence.class).readOneBySystemIdentifier(code);
 		if(parentCode!=null)
-			Assert.assertEquals("Parent is not correct",parentCode,nestedSet.getParent().getCode());
+			Assert.assertEquals("Parent is not correct",parentCode,nestedSet.getParent().getIdentifier());
 		assertionHelper.assertEqualsNumber("Left index is not correct", leftIndex, nestedSet.getLeftIndex());
 		assertionHelper.assertEqualsNumber("Right index is not correct", rightIndex, nestedSet.getRightIndex());
 		Assert.assertEquals("Number of children from count is not correct",new Long(numberOfChildren),__inject__(NestedSetPersistence.class).countByParent(nestedSet));
@@ -653,14 +653,14 @@ public class NestedSetBusinessIntegrationTest extends AbstractBusinessEntityInte
 	
 	private void createNestedSets(String group,String parentCode,String...children){
 		for(String index : children){
-			NestedSet nestedSet = new NestedSet().setCode(index).setGroup(group).setFromBusinessIdentifier(NestedSet.FIELD_PARENT,parentCode);
+			NestedSet nestedSet = new NestedSet().setIdentifier(index).setGroup(group).setParentFromIdentifier(parentCode);
 			__createEntity__(nestedSet);
 		}
 	}
 	
 	private void moveNestedSet(String code,String parentCode){
-		NestedSet nestedSet = __readEntity__(NestedSet.class, code, ValueUsageType.BUSINESS);
-		nestedSet.setParentFromCode(parentCode);
+		NestedSet nestedSet = __readEntity__(NestedSet.class, code, ValueUsageType.SYSTEM);
+		nestedSet.setParentFromIdentifier(parentCode);
 		__updateEntity__(nestedSet);
 	}
 	

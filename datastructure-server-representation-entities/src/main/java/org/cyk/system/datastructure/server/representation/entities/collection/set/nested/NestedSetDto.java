@@ -32,8 +32,8 @@ public class NestedSetDto extends AbstractEntityFromPersistenceEntity implements
 	private String numberOfAscendant;
 	
 	@Override
-	public NestedSetDto setCode(String code) {
-		return (NestedSetDto) super.setCode(code);
+	public NestedSetDto setIdentifier(String identifier) {
+		return (NestedSetDto) super.setIdentifier(identifier);
 	}
 	
 	@Override

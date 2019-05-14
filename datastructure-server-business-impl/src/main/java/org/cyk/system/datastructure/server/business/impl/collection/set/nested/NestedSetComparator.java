@@ -20,7 +20,7 @@ public class NestedSetComparator implements Comparator<NestedSet> {
 				nestedSet1.getGroup().equals(nestedSet2.getGroup())) {
 			if( 
 					(nestedSet1.getParent() == null && nestedSet2.getParent() == null) || 
-					(nestedSet1.getParent() != null && nestedSet2.getParent() != null && nestedSet1.getParent().getCode().equals(nestedSet2.getParent().getCode())) ) {
+					(nestedSet1.getParent() != null && nestedSet2.getParent() != null && nestedSet1.getParent().getIdentifier().equals(nestedSet2.getParent().getIdentifier())) ) {
 				
 				if(nestedSet1.getLeftIndex() < nestedSet2.getLeftIndex())
 					return sortOrder == null || SortOrder.ASCENDING.equals(sortOrder) ? -1 : 1;

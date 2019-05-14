@@ -14,7 +14,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.cyk.system.datastructure.server.persistence.entities.Constant;
-import org.cyk.utility.server.persistence.jpa.AbstractEntity;
+import org.cyk.utility.server.persistence.jpa.AbstractIdentifiedByString;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +26,7 @@ import lombok.experimental.Accessors;
 		@UniqueConstraint(name=NestedSet.TABLE_CONSTRAINT_LEFT_INDEX_IS_UNIQUE, columnNames={NestedSet.COLUMN_GROUP,NestedSet.FIELD_LEFT_INDEX})
 		,@UniqueConstraint(name=NestedSet.TABLE_CONSTRAINT_RIGHT_INDEX_IS_UNIQUE,columnNames={NestedSet.COLUMN_GROUP,NestedSet.FIELD_RIGHT_INDEX})
 })
-public class NestedSet extends AbstractEntity implements Serializable {
+public class NestedSet extends AbstractIdentifiedByString implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@NotNull @Column(name=COLUMN_GROUP,nullable=false)
@@ -49,6 +49,11 @@ public class NestedSet extends AbstractEntity implements Serializable {
 		
 	/**/
 	
+	@Override
+	public NestedSet setIdentifier(String identifier) {
+		return (NestedSet) super.setIdentifier(identifier);
+	}
+	
 	/*
 	 * We do not need to declare a field to store this derived value based on existing fields (left and right indexes)
 	 */
@@ -58,13 +63,8 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	/**/
 	
-	@Override
-	public NestedSet setCode(String code) {
-		return (NestedSet) super.setCode(code);
-	}
-	
-	public NestedSet setParentFromCode(String code){
-		return setFromBusinessIdentifier(FIELD_PARENT, code);
+	public NestedSet setParentFromIdentifier(String code){
+		return (NestedSet) super.setFromSystemIdentifier(FIELD_PARENT, code);
 	}
 	
 	@Override
@@ -81,7 +81,7 @@ public class NestedSet extends AbstractEntity implements Serializable {
 	
 	@Override
 	public String toString() {
-		return getCode()+","+getLeftIndex()+"-"+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant()+(getParent() == null ? "" : ",P="+getParent().getCode());
+		return getIdentifier()+","+getLeftIndex()+"-"+getRightIndex()+",C="+getNumberOfChildren()+",D="+getNumberOfDescendant()+",A="+getNumberOfAscendant()+(getParent() == null ? "" : ",P="+getParent().getIdentifier());
 	}
 	
 	/**/
